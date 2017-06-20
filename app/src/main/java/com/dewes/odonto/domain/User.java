@@ -31,6 +31,8 @@ public class User extends AbstractEntity implements Serializable {
     @SerializedName("password")
     private String password;
 
+    public User() {}
+
     public User(String firstName, String lastName, String email, String username, String password) {
         this.firstName = firstName;
         this.lastName = lastName;

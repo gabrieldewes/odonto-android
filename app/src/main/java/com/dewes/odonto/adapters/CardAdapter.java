@@ -43,9 +43,9 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
     public void onBindViewHolder(CardViewHolder holder, int position) {
         Card card = cards.get(position);
         holder.setCardItem(card);
-        holder.tvCardTitle.setText("Card #"+ card.getId());
+        holder.tvCardTitle.setText(String.format(this.context.getResources().getString(R.string.title_card), card.getId()));
         holder.tvCardWhatafield.setText(card.getWhatafield());
-        holder.btCardArchive.setText(card.isDeleted() ? "recover" : "archive");
+        holder.btCardArchive.setText(card.isDeleted() ? this.context.getResources().getText(R.string.action_recover_card) : this.context.getResources().getText(R.string.action_archive_card));
     }
 
     @Override

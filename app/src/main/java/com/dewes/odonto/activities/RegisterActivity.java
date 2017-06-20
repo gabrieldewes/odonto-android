@@ -250,7 +250,7 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                     else {
-                        Snackbar.make(registerView, "API error", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(registerView, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
                     }
                 }
 

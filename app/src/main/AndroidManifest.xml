@@ -26,8 +26,9 @@
         <activity
             android:name=".activities.CardDetailActivity"
             android:label="@string/title_activity_card_details" />
-        <activity android:name=".activities.ActionActivity"
-            android:label="@string/title_activity_action"/>
+        <activity
+            android:name=".activities.ActionActivity"
+            android:label="@string/title_activity_action" />
         <activity
             android:name=".activities.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -40,7 +41,9 @@
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/title_activity_main" />
-
+        <activity
+            android:name=".activities.CardCreateActivity"
+            android:label="@string/title_activity_create_card"/>
     </application>
 
 </manifest>

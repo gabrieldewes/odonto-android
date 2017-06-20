@@ -8,6 +8,7 @@
     <string name="prompt_password">Senha</string>
     <string name="prompt_password_confirm">Confirmação de Senha</string>
     <string name="prompt_login">Usuário ou e-mail</string>
+    <string name="prompt_card_whatafield">Whatafield</string>
 
     <string name="title_activity_main">Odonto</string>
     <string name="title_activity_card">Cartões</string>
@@ -17,7 +18,8 @@
     <string name="title_activity_register">Registre-se</string>
     <string name="title_home">Home</string>
     <string name="title_cards">Cartões</string>
-    <string name="title_card">Cartão #%1$l</string>
+    <string name="title_activity_create_card">Novo cartão</string>
+    <string name="title_card">Cartão #%1$d</string>
     <string name="title_archive">Arquivo</string>
     <string name="title_profile">Perfil</string>
 
@@ -25,6 +27,8 @@
     <string name="action_sign_in_short">Login</string>
     <string name="action_register">Registre-se</string>
     <string name="action_register_short">Registre-se</string>
+
+    <string name="action_save">Salvar</string>
 
     <string name="action_archive_card">Arquivar</string>
     <string name="action_recover_card">Desarquivar</string>
@@ -38,11 +42,13 @@
     <string name="error_incorrect_password_confirm">A confirmação de senha deve ser igual a senha</string>
     <string name="error_field_required">Este campo é obrigatório</string>
     <string name="error_bad_credentials">Credenciais incorretas</string>
+    <string name="error_create_card">Ocorreu um erro ao criar um novo cartão</string>
     <string name="error_no_connection">Sem conexão</string>
     <string name="error_api_response">Ocorreu um erro com o retorno da API</string>
 
     <string name="success_create_account">Sua conta foi criada. For favor, verifique seu e-mail para ativa-la</string>
     <string name="success_logged_out">Você foi desconectado</string>
+    <string name="success_created_card">Novo cartão criado</string>
     <string name="success_archived_card">Cartão arquivado</string>
     <string name="success_recovered_card">Cartão desarquivado</string>
 

@@ -38,7 +38,7 @@ public interface CardApi {
     Call<Status> archiveRAW(@Body Boolean archive, @Path("cardId") Long cardId);
 
     @POST("cards")
-    Call<Card> save(@Body Card c);
+    Call<Status<Card>> save(@Body Card c);
 
     @PUT("cards/{cardId}")
     Call<Card> update(@Body Card c, @Path("cardId") Long cardId);

@@ -16,16 +16,13 @@ public class Card extends AbstractEntity implements Serializable {
     @SerializedName("whatafield")
     private String whatafield;
 
-    private List<Action> actions;
-
-    private List<Attachment> attachments;
+    private User user;
 
     @Override
     public String toString() {
         return "Card{" +
                 "whatafield='" + whatafield + '\'' +
-                ", actions=" + actions +
-                ", attachments=" + attachments +
+                ", user=" + user +
                 '}';
     }
 
@@ -37,19 +34,12 @@ public class Card extends AbstractEntity implements Serializable {
         this.whatafield = whatafield;
     }
 
-    public List<Action> getActions() {
-        return actions;
+    public User getUser() {
+        return user;
     }
 
-    public void setActions(List<Action> actions) {
-        this.actions = actions;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public List<Attachment> getAttachments() {
-        return attachments;
-    }
-
-    public void setAttachments(List<Attachment> attachments) {
-        this.attachments = attachments;
-    }
 }
