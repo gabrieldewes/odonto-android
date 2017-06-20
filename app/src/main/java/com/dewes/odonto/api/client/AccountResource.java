@@ -22,17 +22,18 @@ public class AccountResource {
         this.accountApi = ServiceGenerator.createService(AccountApi.class);
     }
 
-    public Call me(final Callback<String> callback) {
-        Call<String> call = this.accountApi.me();
-        call.enqueue(new retrofit2.Callback<String>() {
+    public Call me(final Callback<Status> callback) {
+        Call<Status> call = this.accountApi.me();
+        call.enqueue(new retrofit2.Callback<Status>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                Log.d("API", "onResult "+ response.body());
+            public void onResponse(Call<Status> call, Response<Status> response) {
+                callback.onResult(response.body());
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                Log.d("API", "onError");
+            public void onFailure(Call<Status> call, Throwable t) {
+                t.printStackTrace();
+                callback.onError();
             }
         });
         return call;

@@ -12,7 +12,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.dewes.odonto.activities.RegisterActivity">
 
-    <!-- Login progress -->
     <ProgressBar
         android:id="@+id/pbRegister"
         style="?android:attr/progressBarStyleLarge"

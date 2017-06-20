@@ -168,33 +168,37 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onResult(com.dewes.odonto.domain.Status status) {
                     Log.d("API", "onResult "+ status);
+
+                    showProgress(false);
+
                     if (status != null) {
                         if (status.getStatus().equals("connected")) {
-                            if (status.getData() instanceof Principal) {
-                                Principal principal = (Principal) status.getData();
+                            Principal principal = (Principal) status.getData();
+                            if (principal != null) {
                                 authService.putPrincipal(principal);
                                 LoginActivity.this.finish();
                                 LoginActivity.this.startActivity(
                                         new Intent(LoginActivity.this, MainActivity.class));
                             }
                             else {
-                                Snackbar.make(mLoginFormView, "Error retrieving user information.", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(mLoginFormView, getResources().getText(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
                             }
                         }
                         else {
                             mPasswordView.setText("");
-                            Snackbar.make(mLoginFormView, "Invalid credentials.", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(mLoginFormView, getResources().getText(R.string.error_bad_credentials), Snackbar.LENGTH_LONG).show();
                         }
 
                     }
                     else {
-                        Snackbar.make(mLoginFormView, "API error", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(mLoginFormView, getResources().getText(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onError() {
-                    Snackbar.make(mLoginFormView, "No connection", Snackbar.LENGTH_LONG).show();
+                    showProgress(false);
+                    Snackbar.make(mLoginFormView, getResources().getText(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
                 }
             });
 
@@ -204,14 +208,9 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            showProgress(false);
+            //showProgress(false);
 
-            if (success) {
-
-            } else {
-                //mPasswordView.setError(getString(R.string.error_incorrect_password));
-                //mPasswordView.requestFocus();
-            }
+            if (success) {} else {}
         }
 
         @Override

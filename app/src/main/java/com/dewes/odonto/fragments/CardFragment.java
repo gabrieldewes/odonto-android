@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -54,6 +55,8 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     boolean archive = false;
     private Call currentCall;
 
+    private Resources res;
+
     public static CardFragment getInstance(boolean archive) {
         CardFragment cardFragment = new CardFragment();
         Bundle args = new Bundle();
@@ -67,7 +70,7 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         super.onActivityCreated(savedInstanceState);
 
         final View view = getView();
-        final Activity activity = getActivity();
+        res = getResources();
 
         Bundle args = getArguments();
         if (args != null) {
@@ -81,9 +84,7 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             progressView       =                      view.findViewById(R.id.fragment_card_progress);
             emptyView          =                      view.findViewById(R.id.empty_view);
 
-            if (isAdded() && activity != null) {
-                showProgress(true);
-            }
+            showProgress(true);
 
             authService = AuthService.getInstance(view.getContext(), true);
             cardResource = new CardResource(authService.getCurrentUserId());
@@ -119,7 +120,8 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
                 @Override
                 public void onError() {
-                    Snackbar.make(fragmentContainer, "No connection", Snackbar.LENGTH_LONG).show();
+                    showProgress(false);
+                    Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
                 }
             });
         }
@@ -135,7 +137,7 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
-        cardResource.findAll(archive, new Callback<List<Card>>() {
+        currentCall = cardResource.findAll(archive, new Callback<List<Card>>() {
             @Override
             public void onResult(List<Card> cards) {
                 cardAdapter = new CardAdapter(getView().getContext(), cards);
@@ -145,7 +147,7 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
             @Override
             public void onError() {
-                Snackbar.make(fragmentContainer, "No connection", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
                 swipeRefreshLayout.setRefreshing(false);
             }
         });

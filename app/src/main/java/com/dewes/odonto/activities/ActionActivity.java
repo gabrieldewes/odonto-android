@@ -89,7 +89,7 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
 
             @Override
             public void onError() {
-                Snackbar.make(recyclerView, "No connection", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(recyclerView, getResources().getText(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
             }
         });
     }

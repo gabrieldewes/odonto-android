@@ -23,5 +23,5 @@ public interface AccountApi {
     Call<Status<User>> register(@Body User user);
 
     @GET("account")
-    Call<String> me();
+    Call<Status> me();
 }

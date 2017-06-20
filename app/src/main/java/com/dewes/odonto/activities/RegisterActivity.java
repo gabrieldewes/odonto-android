@@ -23,9 +23,12 @@ import com.dewes.odonto.domain.Status;
 import com.dewes.odonto.domain.User;
 import com.dewes.odonto.util.StringUtils;
 
+import retrofit2.Call;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private RegisterTask registerTask = null;
+    private Call currentCall;
     private AccountResource accountResource = new AccountResource();
 
     private EditText etFirstName;
@@ -134,7 +137,7 @@ public class RegisterActivity extends AppCompatActivity {
             setFocusView(etPasswordConfirm);
             cancel = true;
         }
-        else if (!isPasswordComfirmEqualsPasswordValid(password, passwordConfirm)) {
+        else if (!passwordConfirm.equals(password)) {
             etPasswordConfirm.setError(getString(R.string.error_incorrect_password_confirm));
             setFocusView(etPasswordConfirm);
             cancel = true;
@@ -165,10 +168,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean isPasswordValid(String password) {
         return password.length() > 3 && !StringUtils.hasSpecial(password);
-    }
-
-    private boolean isPasswordComfirmEqualsPasswordValid(String password, String passwordConfirm) {
-        return passwordConfirm.equals(password);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
@@ -221,11 +220,14 @@ public class RegisterActivity extends AppCompatActivity {
 
             focusView = null;
 
-            accountResource.register(firstName, lastName, email, username, password,
+            currentCall = accountResource.register(firstName, lastName, email, username, password,
                     new Callback<com.dewes.odonto.domain.Status<User>>() {
                 @Override
                 public void onResult(com.dewes.odonto.domain.Status<User> status) {
                     Log.d("API", "onResult "+ status);
+
+                    showProgress(false);
+
                     if (status != null) {
                         if (status.getStatus().equals("error_already_in_use_username")) {
                             etUsername.setError(getString(R.string.error_already_in_use_username));
@@ -244,7 +246,7 @@ public class RegisterActivity extends AppCompatActivity {
                             RegisterActivity.this.finish();
                             RegisterActivity.this.startActivity(
                                    new Intent(RegisterActivity.this, LoginActivity.class)
-                                           .putExtra("snackbar", "Sua conta foi criada. Por favor, verifique seu email e ative sua conta."));
+                                           .putExtra("snackbar", getResources().getText(R.string.success_create_account)));
                         }
                     }
                     else {
@@ -255,7 +257,8 @@ public class RegisterActivity extends AppCompatActivity {
                 @Override
                 public void onError() {
                     Log.d("API", "onError");
-                    Snackbar.make(registerView, "No connection", Snackbar.LENGTH_LONG).show();
+                    showProgress(false);
+                    Snackbar.make(registerView, getResources().getText(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
                 }
             });
 
@@ -265,15 +268,9 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             registerTask = null;
-            showProgress(false);
+            //showProgress(false);
 
-            if (success) {
-                //finish();
-            }
-            else {
-                //etPassword.setError(getString(R.string.error_incorrect_password));
-                //etPassword.requestFocus();
-            }
+            if (success) {} else {}
         }
 
         @Override
@@ -282,5 +279,6 @@ public class RegisterActivity extends AppCompatActivity {
             showProgress(false);
         }
     }
+
 }
 

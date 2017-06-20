@@ -1,6 +1,7 @@
 package com.dewes.odonto.fragments;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -43,12 +44,16 @@ public class ProfileFragment extends Fragment {
 
     private Call currentCall;
 
+    private Resources res;
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         View view = getView();
 
         if (view != null) {
+
+            res = getResources();
 
             authService = AuthService.getInstance(view.getContext(), true);
             Principal principal = authService.getPrincipal();
@@ -61,17 +66,19 @@ public class ProfileFragment extends Fragment {
             tvUserProfileUsername = (TextView)  view.findViewById(R.id.user_profile_username);
             tvUserProfileRoles    = (TextView)  view.findViewById(R.id.user_profile_roles);
 
+            Random random = new Random();
+            String[] p = new String[] {"men", "women"};
+            String[] b = new String[] {"Disponível", "Ocupado", "No cinema", "Em reunião", "Olá, tenho interesse", "Ola marilene", "Me inclua fora disso"};
+
             String fullName = (principal.getFirstName() +" "+ principal.getLastName()).trim();
 
             tvUserProfileName.setText(fullName);
-            tvUserProfileBio.setText(principal.getFirstName() +" dont provides a bio");
+            tvUserProfileBio.setText(b[random.nextInt(b.length)]);
             tvUserProfileEmail.setText(principal.getEmail());
             tvUserProfileUsername.setText(principal.getUsername());
             tvUserProfileRoles.setText(principal.getRoles().get(0).replaceAll("ROLE_", ""));
 
-            Random random = new Random();
-            String[] p = new String[]{"men", "women"};
-            String userProfilePhotoUrl = "https://randomuser.me/api/portraits/"+ p[random.nextInt(2)] +"/"+ random.nextInt(100) +".jpg";
+            String userProfilePhotoUrl = "https://randomuser.me/api/portraits/"+ p[random.nextInt(p.length)] +"/"+ random.nextInt(99) +".jpg";
 
             new ImageHelper(ivUserProfilePhoto).execute(userProfilePhotoUrl);
             new ImageHelper(ivHeaderCover, true).execute(userProfilePhotoUrl);
@@ -85,7 +92,7 @@ public class ProfileFragment extends Fragment {
                     getActivity().finish();
                     getActivity().startActivity(
                             new Intent(getActivity(), LoginActivity.class)
-                                    .putExtra("snackbar", "You logged out successfully."));
+                                    .putExtra("snackbar", res.getString(R.string.success_logged_out)));
 
                 }
             });

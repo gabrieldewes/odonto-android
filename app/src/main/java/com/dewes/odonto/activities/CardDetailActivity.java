@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.design.widget.Snackbar;
@@ -45,6 +46,8 @@ public class CardDetailActivity extends AppCompatActivity {
 
     private AttachmentAdapter attachmentAdapter;
 
+    private Resources res;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,14 +58,16 @@ public class CardDetailActivity extends AppCompatActivity {
 
         card = (Card) getIntent().getExtras().get("card");
 
+        res = getResources();
+
         this.tvCardTitle = (TextView) findViewById(R.id.tvCardTitle);
         this.tvCardWhatafield = (TextView) findViewById(R.id.tvCardWhatafield);
         this.btCardActions = (Button) findViewById(R.id.btCardActions);
         this.btCardArchive = (Button) findViewById(R.id.btCardArchive);
 
-        btCardArchive.setText(card.isDeleted() ? "recover" : "archive");
+        btCardArchive.setText(card.isDeleted() ? getResources().getText(R.string.action_recover_card) : getResources().getText(R.string.action_archive_card));
 
-        tvCardTitle.setText("Card #"+ card.getId());
+        tvCardTitle.setText(String.format(res.getString(R.string.title_card), card.getId()));
         tvCardWhatafield.setText(card.getWhatafield());
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
@@ -100,7 +105,7 @@ public class CardDetailActivity extends AppCompatActivity {
 
             @Override
             public void onError() {
-                Snackbar.make(findViewById(R.id.scrollView), "No connection", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(R.id.scrollView), res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
             }
         });
 
@@ -116,17 +121,20 @@ public class CardDetailActivity extends AppCompatActivity {
                     @Override
                     public void onResult(Status<Card> status) {
                         Log.d("API", "onResult "+ status);
+
                         card = status.getData();
-                        btCardArchive.setText(status.getData().isDeleted() ? "recover" : "archive");
+                        btCardArchive.setText(status.getData().isDeleted() ? getResources().getText(R.string.action_recover_card) : getResources().getText(R.string.action_archive_card));
                         btCardArchive.setEnabled(true);
                         btCardArchive.setTextColor(getResources().getColor(R.color.colorCardButton));
-                        Snackbar.make(recyclerView, "Card "+ (card.isDeleted() ? "archived." : "recovered."), Snackbar.LENGTH_LONG).show();
+
+                        Snackbar.make(recyclerView,
+                                (card.isDeleted() ? res.getString(R.string.success_recovered_card) : res.getString(R.string.success_archived_card)), Snackbar.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onError() {
                         Log.d("API", "onError");
-                        Snackbar.make(recyclerView, "An error ocurred while updating card.", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(recyclerView, res.getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
                     }
                 });
             }
