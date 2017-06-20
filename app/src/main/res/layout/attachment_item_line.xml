@@ -1,0 +1,47 @@
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/ivAttachThumb"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:padding="6dp"
+            android:src="@color/colorPrimary"
+            android:layout_alignParentRight="true"/>
+
+        <TextView
+            android:id="@+id/tvAttachTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="24dp"
+            android:text="Title goes here"
+            android:textColor="@color/primary_text_default_material_light"
+            android:textSize="24sp"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@id/ivAttachThumb"/>
+
+        <TextView
+            android:id="@+id/tvAttachAlt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="Subtitle here"
+            android:textSize="16sp"
+            android:layout_below="@id/tvAttachTitle"/>
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

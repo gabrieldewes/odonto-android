@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#f16529</color>
+    <color name="colorPrimaryDark">#e44d26</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorCardButton">@color/accent_material_light</color>
+</resources>

@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">Odonto</string>
+
+    <!-- Strings related to userCredentials -->
+    <string name="prompt_first_name">First Name</string>
+    <string name="prompt_last_name">Last Name</string>
+    <string name="prompt_username">Username</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_password_confirm">Password Confirm</string>
+    <string name="prompt_login">Username or Email</string>
+
+    <string name="title_activity_main">Odonto</string>
+    <string name="title_activity_card">Cards</string>
+    <string name="title_activity_action">Actions</string>
+    <string name="title_activity_card_details">Card details</string>
+    <string name="title_activity_login">Sign In</string>
+    <string name="title_activity_register">Sign Up</string>
+    <string name="title_home">Home</string>
+    <string name="title_cards">Cards</string>
+    <string name="title_archive">Archive</string>
+    <string name="title_profile">Profile</string>
+
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_register">Sign Up</string>
+    <string name="action_register_short">Sign Up</string>
+
+    <string name="error_already_in_use_email">Another person is using this email.</string>
+    <string name="error_already_in_use_username">Another person is using this username.</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_username">Username must contain only lowercase alphanumeric characters with no spaces.</string>
+    <string name="error_invalid_password">Password must contain at least 3 alphanumeric characters with no spaces.</string>
+    <string name="error_invalid_login">Login must contain only lowercase characters with no spaces.</string>
+    <string name="error_incorrect_password_confirm">The confirm password must be equals the password.</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+
+    <string name="empty_view">Nothing to show.</string>
+
+</resources>
