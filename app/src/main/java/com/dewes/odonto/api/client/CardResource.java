@@ -84,7 +84,9 @@ public class CardResource {
 
             @Override
             public void onFailure(Call<List<Card>> call, Throwable t) {
-                callback.onError();
+                t.printStackTrace();
+                if (!call.isCanceled())
+                    callback.onError();
             }
         });
         return call;
@@ -100,7 +102,9 @@ public class CardResource {
 
             @Override
             public void onFailure(Call<List<Card>> call, Throwable t) {
-                callback.onError();
+                t.printStackTrace();
+                if (!call.isCanceled())
+                    callback.onError();
             }
         });
         return call;

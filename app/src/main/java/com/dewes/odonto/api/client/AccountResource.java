@@ -33,7 +33,8 @@ public class AccountResource {
             @Override
             public void onFailure(Call<Status> call, Throwable t) {
                 t.printStackTrace();
-                callback.onError();
+                if (!call.isCanceled())
+                    callback.onError();
             }
         });
         return call;

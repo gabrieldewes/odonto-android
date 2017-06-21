@@ -128,7 +128,7 @@ public class CardDetailActivity extends AppCompatActivity {
                         btCardArchive.setTextColor(getResources().getColor(R.color.colorCardButton));
 
                         Snackbar.make(recyclerView,
-                                (card.isDeleted() ? res.getString(R.string.success_recovered_card) : res.getString(R.string.success_archived_card)), Snackbar.LENGTH_LONG).show();
+                                (card.isDeleted() ? res.getString(R.string.success_archived_card) : res.getString(R.string.success_recovered_card)), Snackbar.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -137,6 +137,14 @@ public class CardDetailActivity extends AppCompatActivity {
                         Snackbar.make(recyclerView, res.getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
                     }
                 });
+            }
+        });
+
+        btCardActions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CardDetailActivity.this.startActivity(
+                        ActionActivity.getIntent(CardDetailActivity.this, card));
             }
         });
     }

@@ -140,9 +140,22 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         currentCall = cardResource.findAll(archive, new Callback<List<Card>>() {
             @Override
             public void onResult(List<Card> cards) {
-                cardAdapter = new CardAdapter(getView().getContext(), cards);
-                recyclerView.setAdapter(cardAdapter);
+                showProgress(false);
                 swipeRefreshLayout.setRefreshing(false);
+
+                if (cards != null) {
+                    cardAdapter = new CardAdapter(getContext(), cards);
+                    recyclerView.setAdapter(cardAdapter);
+
+                    if (cards.isEmpty()) {
+                        recyclerView.setVisibility(View.GONE);
+                        emptyView.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        recyclerView.setVisibility(View.VISIBLE);
+                        emptyView.setVisibility(View.GONE);
+                    }
+                }
             }
 
             @Override
@@ -170,6 +183,13 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         else {
             progressView.setVisibility(show ? View.VISIBLE : View.GONE);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (currentCall != null)
+            currentCall.cancel();
     }
 
     @Override

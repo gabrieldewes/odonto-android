@@ -1,6 +1,7 @@
 package com.dewes.odonto.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,10 +25,12 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
 
     private Context context;
     private List<Action> actions;
+    private Resources res;
 
     public ActionAdapter(Context context, List<Action> actions) {
         this.context = context;
         this.actions = actions;
+        this.res = this.context.getResources();
     }
 
     @Override
@@ -40,7 +43,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
     public void onBindViewHolder(ActionViewHolder holder, int position) {
         Action action = actions.get(position);
         holder.setActionItem(action);
-        holder.tvActionType.setText("Action #"+ action.getId());
+        holder.tvActionType.setText(String.format(res.getString(R.string.title_action), action.getId()));
         holder.tvActionWhatafield.setText(action.getWhatafield());
     }
 

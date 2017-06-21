@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:text="view"
+                android:text="@string/title_view"
                 android:textColor="@color/accent_material_light" />
 
             <Button
@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:text="actions"
+                android:text="@string/title_actions"
                 android:textColor="@color/accent_material_light" />
 
             <Button
@@ -59,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:text="archive"
+                android:text="@string/action_archive_card"
                 android:textColor="@color/accent_material_light" />
         </LinearLayout>
 

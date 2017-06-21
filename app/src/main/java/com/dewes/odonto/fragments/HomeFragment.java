@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -78,6 +79,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 @Override
                 public void onError() {
                     showProgress(false);
+                    Snackbar.make(fragmentContainer, getResources().getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
                 }
             });
 
@@ -95,6 +97,13 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         fragmentContainer = (FrameLayout) view.findViewById(R.id.fragmentHome);
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (currentCall != null)
+            currentCall.cancel();
     }
 
     @Override
@@ -142,12 +151,15 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             public void onResult(Status status) {
                 swipeRefreshLayout.setRefreshing(false);
                 showProgress(false);
+                tvTitle.setText(status.getStatus());
+                tvSubtitle.setText(status.getMessage());
             }
 
             @Override
             public void onError() {
                 swipeRefreshLayout.setRefreshing(false);
                 showProgress(false);
+                Snackbar.make(fragmentContainer, getResources().getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
             }
         });
 

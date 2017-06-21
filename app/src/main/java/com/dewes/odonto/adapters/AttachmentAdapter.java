@@ -1,6 +1,7 @@
 package com.dewes.odonto.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +22,12 @@ public class AttachmentAdapter extends RecyclerView.Adapter<AttachmentAdapter.At
 
     private Context context;
     private List<Attachment> attachments;
+    private Resources res;
 
     public AttachmentAdapter(Context context, List<Attachment> attachments) {
         this.context = context;
         this.attachments = attachments;
+        this.res = this.context.getResources();
     }
 
     @Override
@@ -37,7 +40,7 @@ public class AttachmentAdapter extends RecyclerView.Adapter<AttachmentAdapter.At
     public void onBindViewHolder(AttachmentViewHolder holder, int position) {
         Attachment attachment = attachments.get(position);
         holder.setAttachmentItem(attachment);
-        holder.tvAttachTitle.setText("Attachment #"+ attachment.getId());
+        holder.tvAttachTitle.setText(String.format(res.getString(R.string.title_attachment), attachment.getId()));
         holder.tvAttachAlt.setText(attachment.getAlt());
         new ImageHelper(holder.ivAttachThumb).execute(attachment.getThumbUrl());
     }

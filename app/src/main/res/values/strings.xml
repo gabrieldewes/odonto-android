@@ -18,10 +18,15 @@
     <string name="title_activity_register">Registre-se</string>
     <string name="title_home">Home</string>
     <string name="title_cards">Cartões</string>
+    <string name="title_actions">Ações</string>
+    <string name="title_attachments">Anexos</string>
     <string name="title_activity_create_card">Novo cartão</string>
     <string name="title_card">Cartão #%1$d</string>
+    <string name="title_action">Ação #%1$d</string>
+    <string name="title_attachment">Anexo #%1$d</string>
     <string name="title_archive">Arquivo</string>
     <string name="title_profile">Perfil</string>
+    <string name="title_view">Ver</string>
 
     <string name="action_sign_in">Login</string>
     <string name="action_sign_in_short">Login</string>

@@ -3,8 +3,17 @@ package com.dewes.odonto.activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
+import android.provider.OpenableColumns;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +29,9 @@ import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.api.client.CardResource;
 import com.dewes.odonto.domain.Card;
 import com.dewes.odonto.services.AuthService;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
 
 import retrofit2.Call;
 
@@ -151,7 +163,6 @@ public class CardCreateActivity extends AppCompatActivity {
             showProgress(false);
         }
     }
-
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
