@@ -7,6 +7,8 @@ import com.dewes.odonto.domain.User;
 import com.dewes.odonto.domain.UserCredentials;
 import com.dewes.odonto.domain.Status;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -58,10 +60,10 @@ public class AccountResource {
         return call;
     }
 
-    public Call register(String firstName, String lastName, String email, String username, String password,
+    public Call registerORIGINAL(String firstName, String lastName, String email, String username, String password,
                          final Callback<Status<User>> callback) {
         User user = new User(firstName, lastName, email, username, password);
-        Call<Status<User>> call = this.accountApi.register(user);
+        Call<Status<User>> call = this.accountApi.registerORIGINAL(user);
         call.enqueue(new retrofit2.Callback<Status<User>>() {
             @Override
             public void onResponse(Call<Status<User>> call, Response<Status<User>> response) {
@@ -70,6 +72,25 @@ public class AccountResource {
 
             @Override
             public void onFailure(Call<Status<User>> call, Throwable t) {
+                t.printStackTrace();
+                callback.onError();
+            }
+        });
+        return call;
+    }
+
+    public Call register(String firstName, String lastName, String email, String username, String password,
+                         final Callback<Status<List<Status<User>>>> callback) {
+        User user = new User(firstName, lastName, email, username, password);
+        Call<Status<List<Status<User>>>> call = this.accountApi.register(user);
+        call.enqueue(new retrofit2.Callback<Status<List<Status<User>>>>() {
+            @Override
+            public void onResponse(Call<Status<List<Status<User>>>> call, Response<Status<List<Status<User>>>> response) {
+                callback.onResult(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<Status<List<Status<User>>>> call, Throwable t) {
                 t.printStackTrace();
                 callback.onError();
             }

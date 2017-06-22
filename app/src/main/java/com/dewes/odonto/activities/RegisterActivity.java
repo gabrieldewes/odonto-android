@@ -23,6 +23,8 @@ import com.dewes.odonto.domain.Status;
 import com.dewes.odonto.domain.User;
 import com.dewes.odonto.util.StringUtils;
 
+import java.util.List;
+
 import retrofit2.Call;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -221,32 +223,55 @@ public class RegisterActivity extends AppCompatActivity {
             focusView = null;
 
             currentCall = accountResource.register(firstName, lastName, email, username, password,
-                    new Callback<com.dewes.odonto.domain.Status<User>>() {
+                    new Callback<com.dewes.odonto.domain.Status<List<com.dewes.odonto.domain.Status<User>>>>() {
                 @Override
-                public void onResult(com.dewes.odonto.domain.Status<User> status) {
+                public void onResult(com.dewes.odonto.domain.Status<List<com.dewes.odonto.domain.Status<User>>> status) {
                     Log.d("API", "onResult "+ status);
 
                     showProgress(false);
 
                     if (status != null) {
-                        if (status.getStatus().equals("error_already_in_use_username")) {
-                            etUsername.setError(getString(R.string.error_already_in_use_username));
-                            setFocusView(etUsername);
-                            focusView.requestFocus();
-                        }
-                        else if (status.getStatus().equals("error_already_in_use_email")) {
-                            etEmail.setError(getString(R.string.error_already_in_use_email));
-                            setFocusView(etEmail);
-                            focusView.requestFocus();
+                        if (status.getStatus().equals("error_empty_fields")) {
+                            for (com.dewes.odonto.domain.Status<User> s : status.getData()) {
+                                switch (s.getStatus()) {
+                                    case "error_already_in_use_email":
+                                        etEmail.setError(getString(R.string.error_already_in_use_email));
+                                        setFocusView(etEmail);
+                                        break;
+                                    case "error_invalid_email":
+                                        etEmail.setError(getString(R.string.error_invalid_email));
+                                        setFocusView(etEmail);
+                                        break;
+                                    case "error_already_in_use_username":
+                                        etUsername.setError(getString(R.string.error_already_in_use_username));
+                                        setFocusView(etUsername);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            if (focusView != null)
+                                focusView.requestFocus();
                         }
                         else if (status.getStatus().equals("error_create_account")) {
                             Snackbar.make(registerView, status.getMessage(), Snackbar.LENGTH_LONG).show();
                         }
-                        else if (status.getStatus().equals("created_account")) {
-                            RegisterActivity.this.finish();
-                            RegisterActivity.this.startActivity(
-                                   new Intent(RegisterActivity.this, LoginActivity.class)
-                                           .putExtra("snackbar", getResources().getText(R.string.success_create_account)));
+                        else if (status.getStatus().equals("success_create_account")) {
+                            if (status.getData() != null) {
+                                if (status.getData().get(0) != null) {
+                                    String email = status.getData().get(0).getData().getEmail();
+                                    RegisterActivity.this.finish();
+                                    RegisterActivity.this.startActivity(
+                                            new Intent(RegisterActivity.this, LoginActivity.class)
+                                                    .putExtra("snackbar", String.format(getResources().getString(R.string.success_create_account), email)));
+                                }
+                                else {
+                                    Snackbar.make(registerView, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
+                                }
+                            }
+                            else {
+                                Snackbar.make(registerView, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
+                            }
                         }
                     }
                     else {

@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import com.dewes.odonto.R;
 import com.dewes.odonto.api.client.AccountResource;
 import com.dewes.odonto.api.client.Callback;
@@ -42,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (getIntent().getExtras() != null && getIntent().getExtras().containsKey("snackbar")) {
             String snackbar = getIntent().getExtras().getString("snackbar");
-            Snackbar.make(findViewById(R.id.login_form), snackbar, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(findViewById(R.id.login_form), snackbar, Snackbar.LENGTH_INDEFINITE).show();
         }
 
         accountResource = new AccountResource();
@@ -181,8 +183,13 @@ public class LoginActivity extends AppCompatActivity {
                                         new Intent(LoginActivity.this, MainActivity.class));
                             }
                             else {
-                                Snackbar.make(mLoginFormView, getResources().getText(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(mLoginFormView, getResources().getText(R.string.error_api_response), Snackbar.LENGTH_INDEFINITE).show();
                             }
+                        }
+                        else if (status.getStatus().equals("error_account_not_activated")) {
+                            Snackbar.make(mLoginFormView, getResources().getText(R.string.error_account_not_activated), Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("reenviar", new SnackbarClick())
+                                    .show();
                         }
                         else {
                             mPasswordView.setText("");
@@ -217,6 +224,13 @@ public class LoginActivity extends AppCompatActivity {
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
+        }
+    }
+
+    public class SnackbarClick implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(v.getContext(), "reenviar", Toast.LENGTH_SHORT).show();
         }
     }
 }

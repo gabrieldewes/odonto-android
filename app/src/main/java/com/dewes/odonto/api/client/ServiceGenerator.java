@@ -25,7 +25,8 @@ public class ServiceGenerator {
     private Context context;
 
     //private static String API_URL = "http://104.131.172.28/api/";
-    private static String API_URL = "http://10.0.0.10/odonto/api/";
+    //private static String API_URL = "http://10.0.0.10/odonto/api/";
+    private static String API_URL = "http://192.168.0.101/odonto/api/";
 
     private static final String CLIENT_ID = "android";
     private static final String CLIENT_SECRET = "android-secret";

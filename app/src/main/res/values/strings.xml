@@ -42,7 +42,7 @@
     <string name="error_already_in_use_username">Outra pessoa já está usando este usuário</string>
     <string name="error_invalid_email">Endereço de e-mail inválido</string>
     <string name="error_invalid_username">Usuário deve comenter somente caracteres alfanuméricos caixa baixa sem espaços</string>
-    <string name="error_invalid_password">Senha deve conter no mínimo 3 caracteres alfanuméricos sem espaços</string>
+    <string name="error_invalid_password">Senha deve conter no mínimo 4 caracteres alfanuméricos sem espaços</string>
     <string name="error_invalid_login">Login deve conter somente caracteres caixa baixa sem espaços</string>
     <string name="error_incorrect_password_confirm">A confirmação de senha deve ser igual a senha</string>
     <string name="error_field_required">Este campo é obrigatório</string>
@@ -50,8 +50,9 @@
     <string name="error_create_card">Ocorreu um erro ao criar um novo cartão</string>
     <string name="error_no_connection">Sem conexão</string>
     <string name="error_api_response">Ocorreu um erro com o retorno da API</string>
+    <string name="error_account_not_activated">Sua conta ainda não foi ativada. Por favor, confirme o seu email</string>
 
-    <string name="success_create_account">Sua conta foi criada. For favor, verifique seu e-mail para ativa-la</string>
+    <string name="success_create_account">Sua conta foi criada. For favor, verifique seu e-mail (%1$s) para ativa-la</string>
     <string name="success_logged_out">Você foi desconectado</string>
     <string name="success_created_card">Novo cartão criado</string>
     <string name="success_archived_card">Cartão arquivado</string>

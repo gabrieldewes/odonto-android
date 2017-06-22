@@ -5,6 +5,8 @@ import com.dewes.odonto.domain.User;
 import com.dewes.odonto.domain.UserCredentials;
 import com.dewes.odonto.domain.Status;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -20,7 +22,10 @@ public interface AccountApi {
     Call<Status<Principal>> authenticate(@Body UserCredentials userCredentials);
 
     @POST("account/register")
-    Call<Status<User>> register(@Body User user);
+    Call<Status<User>> registerORIGINAL(@Body User user);
+
+    @POST("account/register")
+    Call<Status<List<Status<User>>>> register(@Body User user);
 
     @GET("account")
     Call<Status> me();
