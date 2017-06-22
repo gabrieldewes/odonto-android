@@ -1,10 +1,15 @@
 package com.dewes.odonto.api.client;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
 import com.dewes.odonto.domain.Action;
 import com.dewes.odonto.domain.Attachment;
 import com.dewes.odonto.domain.Card;
 import com.dewes.odonto.domain.Status;
 import com.dewes.odonto.domain.User;
+import com.dewes.odonto.services.AuthService;
+import com.dewes.odonto.util.Preferences;
 
 import java.util.List;
 import retrofit2.Call;
@@ -18,20 +23,22 @@ public class CardResource {
 
     private CardApi cardApi;
 
-    public CardResource(Long userId) {
-        this.cardApi = ServiceGenerator.createService(CardApi.class, userId);
+    private static CardResource INSTANCE;
+
+    public static CardResource getInstance(String token, boolean forceInstantiation) {
+        if (INSTANCE == null || forceInstantiation) {
+            INSTANCE = new CardResource(token, forceInstantiation);
+        }
+        return INSTANCE;
     }
 
-    public CardResource() {
-        this.cardApi = ServiceGenerator.createService(CardApi.class);
+    private CardResource(String token, boolean forceInstantiation) {
+        this.cardApi = ServiceGenerator.createService(CardApi.class, token);
     }
 
-    public Call create(String whatafield, Long userId, final Callback<Status<Card>> callback) {
+    public Call create(String whatafield, final Callback<Status<Card>> callback) {
         Card card = new Card();
         card.setWhatafield(whatafield);
-        User user = new User();
-        user.setId(userId);
-        card.setUser(user);
         Call<Status<Card>> call = this.cardApi.save(card);
         call.enqueue(new retrofit2.Callback<Status<Card>>() {
             @Override
@@ -163,7 +170,6 @@ public class CardResource {
         call.enqueue(new retrofit2.Callback<List<Action>>() {
             @Override
             public void onResponse(Call<List<Action>> call, Response<List<Action>> response) {
-                //Log.d("API", "Called "+ call.request().url());
                 callback.onResult(response.body());
             }
 

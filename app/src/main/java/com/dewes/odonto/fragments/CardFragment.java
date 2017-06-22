@@ -87,7 +87,7 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             showProgress(true);
 
             authService = AuthService.getInstance(view.getContext(), true);
-            cardResource = new CardResource(authService.getCurrentUserId());
+            cardResource = CardResource.getInstance(authService.getToken(), false);
 
             swipeRefreshLayout.setOnRefreshListener(this);
 

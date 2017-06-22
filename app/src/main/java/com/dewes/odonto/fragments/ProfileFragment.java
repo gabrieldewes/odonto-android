@@ -1,9 +1,14 @@
 package com.dewes.odonto.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +17,15 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dewes.odonto.R;
 import com.dewes.odonto.activities.LoginActivity;
+import com.dewes.odonto.api.client.AccountResource;
+import com.dewes.odonto.api.client.AuthResource;
+import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.domain.Principal;
+import com.dewes.odonto.domain.Status;
 import com.dewes.odonto.services.AuthService;
 import com.dewes.odonto.util.ImageHelper;
 
@@ -29,9 +39,13 @@ import retrofit2.Call;
 
 public class ProfileFragment extends Fragment {
 
-    private FrameLayout fragmentContainer;
+    private FrameLayout fragmentContainer = null;
+
+    private View progressView;
 
     private AuthService authService;
+
+    private AccountResource accountResource;
 
     private ImageView ivUserProfilePhoto;
     private ImageView ivHeaderCover;
@@ -46,17 +60,19 @@ public class ProfileFragment extends Fragment {
 
     private Resources res;
 
+    final Random random = new Random();
+    final String[] p = new String[] {"men", "women"};
+    final String[] b = new String[] {"Disponível", "Ocupado", "No cinema", "Em reunião", "Olá, tenho interesse", "Ola marilene", "Me inclua fora disso"};
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         View view = getView();
 
         if (view != null) {
+            showProgress(true);
 
             res = getResources();
-
-            authService = AuthService.getInstance(view.getContext(), true);
-            Principal principal = authService.getPrincipal();
 
             ivUserProfilePhoto    = (ImageView) view.findViewById(R.id.user_profile_photo);
             ivHeaderCover         = (ImageView) view.findViewById(R.id.header_cover_image);
@@ -66,38 +82,70 @@ public class ProfileFragment extends Fragment {
             tvUserProfileUsername = (TextView)  view.findViewById(R.id.user_profile_username);
             tvUserProfileRoles    = (TextView)  view.findViewById(R.id.user_profile_roles);
 
-            Random random = new Random();
-            String[] p = new String[] {"men", "women"};
-            String[] b = new String[] {"Disponível", "Ocupado", "No cinema", "Em reunião", "Olá, tenho interesse", "Ola marilene", "Me inclua fora disso"};
-
-            String fullName = (principal.getFirstName() +" "+ principal.getLastName()).trim();
-
-            tvUserProfileName.setText(fullName);
-            tvUserProfileBio.setText(b[random.nextInt(b.length)]);
-            tvUserProfileEmail.setText(principal.getEmail());
-            tvUserProfileUsername.setText(principal.getUsername());
-            tvUserProfileRoles.setText(principal.getRoles().get(0).replaceAll("ROLE_", ""));
+            Button btLogout = (Button) view.findViewById(R.id.btLogout);
 
             String userProfilePhotoUrl = "https://randomuser.me/api/portraits/"+ p[random.nextInt(p.length)] +"/"+ random.nextInt(99) +".jpg";
-
             new ImageHelper(ivUserProfilePhoto).execute(userProfilePhotoUrl);
             new ImageHelper(ivHeaderCover, true).execute(userProfilePhotoUrl);
 
-            Button btLogout = (Button) view.findViewById(R.id.btLogout);
+            authService = AuthService.getInstance(view.getContext(), false);
+            accountResource = new AccountResource(authService.getToken());
+
+            loadProfile();
 
             btLogout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    authService.logout();
-                    getActivity().finish();
-                    getActivity().startActivity(
-                            new Intent(getActivity(), LoginActivity.class)
-                                    .putExtra("snackbar", res.getString(R.string.success_logged_out)));
-
+                    doLogout();
                 }
             });
 
         }
+    }
+
+    private void loadProfile() {
+        currentCall = accountResource.me(new Callback<Principal>() {
+            @Override
+            public void onResult(Principal principal) {
+                showProgress(false);
+                if (principal != null) {
+                    String fullName = (principal.getFirstName() +" "+ principal.getLastName()).trim();
+                    tvUserProfileName.setText(fullName);
+                    tvUserProfileBio.setText(b[random.nextInt(b.length)]);
+                    tvUserProfileEmail.setText(principal.getEmail());
+                    tvUserProfileUsername.setText(principal.getUsername());
+                    tvUserProfileRoles.setText(principal.getRoles().get(0).replaceAll("ROLE_", ""));
+                }
+            }
+
+            @Override
+            public void onError() {
+                showProgress(false);
+                Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void doLogout() {
+        showProgress(true);
+        AuthResource authResource = new AuthResource(authService.getToken());
+        authResource.logout(new Callback<Status>() {
+            @Override
+            public void onResult(Status status) {
+                showProgress(false);
+                authService.removeToken();
+                getActivity().finish();
+                getActivity().startActivity(
+                        new Intent(getActivity(), LoginActivity.class)
+                                .putExtra("snackbar", res.getString(R.string.success_logged_out)));
+            }
+
+            @Override
+            public void onError() {
+                showProgress(false);
+                Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -110,6 +158,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         fragmentContainer = (FrameLayout) view.findViewById(R.id.fragmentProfile);
+        progressView = view.findViewById(R.id.progressBar);
         return view;
     }
 
@@ -118,6 +167,35 @@ public class ProfileFragment extends Fragment {
         super.onDetach();
         if (currentCall != null)
             currentCall.cancel();
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            progressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+
+            fragmentContainer.setVisibility(show ? View.GONE : View.VISIBLE);
+            fragmentContainer.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    fragmentContainer.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+        }
+        else {
+            fragmentContainer.setVisibility(show ? View.GONE : View.VISIBLE);
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
     }
 
 }

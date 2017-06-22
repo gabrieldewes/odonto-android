@@ -25,8 +25,8 @@ public class ServiceGenerator {
     private Context context;
 
     //private static String API_URL = "http://104.131.172.28/api/";
-    //private static String API_URL = "http://10.0.0.10/odonto/api/";
-    private static String API_URL = "http://192.168.0.101/odonto/api/";
+    private static String API_URL = "http://10.0.0.10/odonto/api/";
+    //private static final String API_URL = "http://192.168.0.101/odonto/api/";
 
     private static final String CLIENT_ID = "android";
     private static final String CLIENT_SECRET = "android-secret";
@@ -39,19 +39,12 @@ public class ServiceGenerator {
             .baseUrl(API_URL)
             .addConverterFactory(GsonConverterFactory.create(gson));
 
-    public ServiceGenerator(Context context) {
-        this.context = context;
-        this.API_URL = context.getString(R.string.API_URL);
-    }
-
     private static String getClientCredentials() {
         String credentials = CLIENT_ID + ":" + CLIENT_SECRET;
-        final String basic = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
-        return basic;
+        return "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
     }
 
-    public static <S> S createService(Class<S> service) {
-
+    static <S> S createService(Class<S> service) {
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {
                     @Override
@@ -65,34 +58,31 @@ public class ServiceGenerator {
                         return chain.proceed(request);
                     }
                 }).build();
-        Retrofit retrofit = retrofitBuilder.client(httpClient).build();
-        return retrofit.create(service);
+        return retrofitBuilder
+                .client(httpClient)
+                .build()
+                .create(service);
     }
 
-    public static <S> S createService(Class<S> service, final Long userId) {
+    static <S> S createService(Class<S> service, final String token) {
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         Request original = chain.request();
-
-                        HttpUrl originalHttpUrl = original.url();
-
-                        HttpUrl url = originalHttpUrl.newBuilder()
-                                .addQueryParameter("userId", String.valueOf(userId))
-                                .build();
-
                         Request.Builder requestBuilder = original.newBuilder()
-                                .url(url)
                                 .header("Authorization", getClientCredentials())
+                                .header("X-API-TOKEN", token)
                                 .header("Content-Type", "application/json")
                                 .method(original.method(), original.body());
                         Request request = requestBuilder.build();
                         return chain.proceed(request);
                     }
                 }).build();
-        Retrofit retrofit = retrofitBuilder.client(httpClient).build();
-        return retrofit.create(service);
+        return retrofitBuilder
+                .client(httpClient)
+                .build()
+                .create(service);
     }
 
 }

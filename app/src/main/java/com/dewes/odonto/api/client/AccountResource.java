@@ -4,11 +4,8 @@ import android.util.Log;
 
 import com.dewes.odonto.domain.Principal;
 import com.dewes.odonto.domain.User;
-import com.dewes.odonto.domain.UserCredentials;
 import com.dewes.odonto.domain.Status;
-
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -24,8 +21,13 @@ public class AccountResource {
         this.accountApi = ServiceGenerator.createService(AccountApi.class);
     }
 
-    public Call me(final Callback<Status> callback) {
-        Call<Status> call = this.accountApi.me();
+    public AccountResource(String token) {
+        this.accountApi = ServiceGenerator.createService(AccountApi.class, token);
+    }
+
+    public Call greetings(final Callback<Status> callback) {
+        Call<Status> call = this.accountApi.greetings();
+        //Log.d("API", "Calling "+ call.request().url());
         call.enqueue(new retrofit2.Callback<Status>() {
             @Override
             public void onResponse(Call<Status> call, Response<Status> response) {
@@ -42,38 +44,19 @@ public class AccountResource {
         return call;
     }
 
-    public Call authenticate(String login, String password, final Callback<Status<Principal>> callback) {
-        UserCredentials uc = new UserCredentials(login, password);
-        Call<Status<Principal>> call = this.accountApi.authenticate(uc);
-        call.enqueue(new retrofit2.Callback<Status<Principal>>() {
+    public Call me(final Callback<Principal> callback) {
+        Call<Principal> call = this.accountApi.me();
+        call.enqueue(new retrofit2.Callback<Principal>() {
             @Override
-            public void onResponse(Call<Status<Principal>> call, Response<Status<Principal>> response) {
+            public void onResponse(Call<Principal> call, Response<Principal> response) {
                 callback.onResult(response.body());
             }
 
             @Override
-            public void onFailure(Call<Status<Principal>> call, Throwable t) {
+            public void onFailure(Call<Principal> call, Throwable t) {
                 t.printStackTrace();
-                callback.onError();
-            }
-        });
-        return call;
-    }
-
-    public Call registerORIGINAL(String firstName, String lastName, String email, String username, String password,
-                         final Callback<Status<User>> callback) {
-        User user = new User(firstName, lastName, email, username, password);
-        Call<Status<User>> call = this.accountApi.registerORIGINAL(user);
-        call.enqueue(new retrofit2.Callback<Status<User>>() {
-            @Override
-            public void onResponse(Call<Status<User>> call, Response<Status<User>> response) {
-                callback.onResult(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<Status<User>> call, Throwable t) {
-                t.printStackTrace();
-                callback.onError();
+                if (!call.isCanceled())
+                    callback.onError();
             }
         });
         return call;

@@ -31,7 +31,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private RegisterTask registerTask = null;
     private Call currentCall;
-    private AccountResource accountResource = new AccountResource();
 
     private EditText etFirstName;
     private EditText etLastName;
@@ -208,6 +207,7 @@ public class RegisterActivity extends AppCompatActivity {
         private final String email;
         private final String username;
         private final String password;
+        private final AccountResource accountResource;
 
         RegisterTask(String firstName, String lastName, String email, String username, String password) {
             this.firstName = firstName;
@@ -215,6 +215,7 @@ public class RegisterActivity extends AppCompatActivity {
             this.email = email;
             this.username = username;
             this.password = password;
+            this.accountResource = new AccountResource();
         }
 
         @Override

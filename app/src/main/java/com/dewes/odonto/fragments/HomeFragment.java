@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,11 +53,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         if (view != null) {
 
-            accountResource = new AccountResource();
-
-            authService = AuthService.getInstance(view.getContext(), true);
-            Principal principal = authService.getPrincipal();
-
             tvTitle = (TextView) view.findViewById(R.id.tvTitle);
             tvSubtitle = (TextView) view.findViewById(R.id.tvSubtitle);
 
@@ -68,9 +64,13 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
             showProgress(true);
 
-            currentCall = accountResource.me(new Callback<Status>() {
+            authService = AuthService.getInstance(view.getContext(), false);
+            accountResource = new AccountResource(authService.getToken());
+
+            currentCall = accountResource.greetings(new Callback<Status>() {
                 @Override
                 public void onResult(Status status) {
+                    //Log.d("API", "onResult "+ status);
                     showProgress(false);
                     tvTitle.setText(status.getStatus());
                     tvSubtitle.setText(status.getMessage());
@@ -146,7 +146,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onRefresh() {
         showProgress(true);
 
-        currentCall = accountResource.me(new Callback<Status>() {
+        currentCall = accountResource.greetings(new Callback<Status>() {
             @Override
             public void onResult(Status status) {
                 swipeRefreshLayout.setRefreshing(false);

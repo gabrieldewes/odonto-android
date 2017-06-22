@@ -53,8 +53,8 @@ public class CardCreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_create);
 
-        cardResource = new CardResource();
-        authService = AuthService.getInstance(this, true);
+        authService = AuthService.getInstance(this, false);
+        cardResource = CardResource.getInstance(authService.getToken(), false);
 
         etWhatafield = (EditText) findViewById(R.id.etWhatafield);
 
@@ -117,7 +117,7 @@ public class CardCreateActivity extends AppCompatActivity {
 
             focusView = null;
 
-            currentCall = cardResource.create(whatafield, authService.getCurrentUserId(), new Callback<com.dewes.odonto.domain.Status<Card>>() {
+            currentCall = cardResource.create(whatafield, new Callback<com.dewes.odonto.domain.Status<Card>>() {
                 @Override
                 public void onResult(com.dewes.odonto.domain.Status<Card> status) {
                     Log.d("API", "Called "+ currentCall.request().url());

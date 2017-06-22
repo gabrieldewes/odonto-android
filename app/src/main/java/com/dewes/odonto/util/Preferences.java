@@ -21,13 +21,10 @@ public class Preferences {
     private SharedPreferences sharedPreferences = null;
     private SharedPreferences.Editor editableSharedPreferences = null;
 
-    private Gson gson;
 
-    public Preferences(@NonNull Context context) {
+    private Preferences(@NonNull Context context) {
         this.context = context;
         this.sharedPreferences = context.getApplicationContext().getSharedPreferences("USER_INFO", MODE_PRIVATE);
-        this.editableSharedPreferences = sharedPreferences.edit();
-        this.gson = new Gson();
     }
 
     public static Preferences getInstance(@NonNull Context context) {
@@ -44,24 +41,14 @@ public class Preferences {
         return this.sharedPreferences.getString(key, defaultValue);
     }
 
-    public Object get(String key, Object defaultValue, Class klass) {
-        String value = this.sharedPreferences.getString(key, "{}");
-        Object obj = this.gson.fromJson(value, klass);
-        if (obj != null)
-            return obj;
-        return defaultValue;
-    }
-
     public void put(String key, String value) {
-        editableSharedPreferences.putString(key, value).apply();
-    }
-
-    public void put(String key, Object value) {
-        editableSharedPreferences.putString(key, gson.toJson(value)).apply();
+        this.editableSharedPreferences = sharedPreferences.edit();
+        this.editableSharedPreferences.putString(key, value).apply();
     }
 
     public void remove(String key) {
-        editableSharedPreferences.remove(key).apply();
+        this.editableSharedPreferences = sharedPreferences.edit();
+        this.editableSharedPreferences.remove(key).apply();
     }
 
 

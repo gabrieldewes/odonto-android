@@ -84,7 +84,7 @@ public class CardDetailActivity extends AppCompatActivity {
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
         authService = AuthService.getInstance(this, true);
-        cardResource = new CardResource(authService.getCurrentUserId());
+        cardResource = CardResource.getInstance(authService.getToken(), false);
 
         cardResource.getAttachments(card.getId(), new Callback<List<Attachment>>() {
             @Override

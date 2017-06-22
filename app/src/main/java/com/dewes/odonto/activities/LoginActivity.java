@@ -19,14 +19,17 @@ import android.widget.Toast;
 
 import com.dewes.odonto.R;
 import com.dewes.odonto.api.client.AccountResource;
+import com.dewes.odonto.api.client.AuthResource;
 import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.domain.Principal;
+import com.dewes.odonto.domain.Status;
+import com.dewes.odonto.domain.Token;
 import com.dewes.odonto.services.AuthService;
 import com.dewes.odonto.util.StringUtils;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private AccountResource accountResource;
+    private AuthResource authResource;
     private AuthService authService;
 
     private UserLoginTask mAuthTask = null;
@@ -47,8 +50,9 @@ public class LoginActivity extends AppCompatActivity {
             Snackbar.make(findViewById(R.id.login_form), snackbar, Snackbar.LENGTH_INDEFINITE).show();
         }
 
-        accountResource = new AccountResource();
-        authService = AuthService.getInstance(this, true);
+        authResource = new AuthResource();
+
+        authService = AuthService.getInstance(this, false);
 
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -166,18 +170,18 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            accountResource.authenticate(mEmail, mPassword, new Callback<com.dewes.odonto.domain.Status<Principal>>() {
+            authResource.authenticate(this.mEmail, this.mPassword, new Callback<com.dewes.odonto.domain.Status<Token>>() {
                 @Override
-                public void onResult(com.dewes.odonto.domain.Status status) {
+                public void onResult(com.dewes.odonto.domain.Status<Token> status) {
                     Log.d("API", "onResult "+ status);
 
                     showProgress(false);
 
                     if (status != null) {
-                        if (status.getStatus().equals("connected")) {
-                            Principal principal = (Principal) status.getData();
-                            if (principal != null) {
-                                authService.putPrincipal(principal);
+                        if (status.getStatus().equals("connected") || status.getStatus().equals("already_connected")) {
+                            Token token = status.getData();
+                            if (token != null) {
+                                authService.putToken(token.getToken());
                                 LoginActivity.this.finish();
                                 LoginActivity.this.startActivity(
                                         new Intent(LoginActivity.this, MainActivity.class));

@@ -18,46 +18,32 @@ public class AuthService {
 
     private Preferences prefs;
 
-    public AuthService(@NonNull Context context) {
+    private AuthService(@NonNull Context context) {
         this.context = context;
-
-        if (this.prefs == null)
-            this.prefs = Preferences.getInstance(context);
-    }
-
-    public static AuthService getInstance(@NonNull Context context) {
-        if (INSTANCE == null)
-            INSTANCE = new AuthService(context);
-        return INSTANCE;
+        this.prefs = Preferences.getInstance(this.context);
     }
 
     public static AuthService getInstance(@NonNull Context context, boolean forceInstantiation) {
-        if (forceInstantiation) {
+        if (INSTANCE == null || forceInstantiation) {
             INSTANCE = new AuthService(context);
         }
         return INSTANCE;
     }
 
     public boolean isAuthenticated() {
-        return this.prefs.contains("principal");
+        return this.prefs.contains("token");
     }
 
-    public Principal getPrincipal() {
-        return (Principal) prefs.get("principal", null, Principal.class);
+    public String getToken() {
+        return prefs.get("token", "");
     }
 
-    public void putPrincipal(Principal principal) {
-        prefs.put("principal", principal);
+    public void putToken(String token) {
+        prefs.put("token", token);
     }
 
-    public Long getCurrentUserId() {
-        if (this.isAuthenticated()) {
-            return this.getPrincipal().getId();
-        }
-        return -1L;
+    public void removeToken() {
+        prefs.remove("token");
     }
 
-    public void logout() {
-        prefs.remove("principal");
-    }
 }

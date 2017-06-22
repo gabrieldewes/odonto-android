@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.dewes.odonto.R;
 import com.dewes.odonto.activities.ActionActivity;
 import com.dewes.odonto.activities.CardDetailActivity;
+import com.dewes.odonto.api.client.CardResource;
 import com.dewes.odonto.domain.Card;
 
 import java.util.List;
@@ -73,8 +74,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
             this.btCardActions = (Button) itemView.findViewById(R.id.btCardActions);
             this.btCardArchive = (Button) itemView.findViewById(R.id.btCardArchive);
 
-            btCardArchive.setVisibility(View.GONE);
-
             btCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -93,10 +92,10 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
                 }
             });
 
+            btCardArchive.setVisibility(View.GONE);
             btCardArchive.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     Toast.makeText(itemView.getContext(), btCardArchive.getText(), Toast.LENGTH_LONG).show();
                 }
             });

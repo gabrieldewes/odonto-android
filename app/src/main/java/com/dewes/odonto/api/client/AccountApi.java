@@ -18,15 +18,12 @@ import retrofit2.http.POST;
 
 public interface AccountApi {
 
-    @POST("account/auth")
-    Call<Status<Principal>> authenticate(@Body UserCredentials userCredentials);
-
-    @POST("account/register")
-    Call<Status<User>> registerORIGINAL(@Body User user);
+    @GET("greetings")
+    Call<Status> greetings();
 
     @POST("account/register")
     Call<Status<List<Status<User>>>> register(@Body User user);
 
-    @GET("account")
-    Call<Status> me();
+    @GET("account/me")
+    Call<Principal> me();
 }

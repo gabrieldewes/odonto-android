@@ -57,7 +57,7 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
         showProgress(true);
 
         authService = AuthService.getInstance(this, true);
-        cardResource = new CardResource(authService.getCurrentUserId());
+        cardResource = CardResource.getInstance(authService.getToken(), false);
 
         swipeRefreshLayout.setOnRefreshListener(this);
 
