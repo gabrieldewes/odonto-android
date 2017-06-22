@@ -27,6 +27,8 @@
     <string name="title_archive">Arquivo</string>
     <string name="title_profile">Perfil</string>
     <string name="title_view">Ver</string>
+    <string name="title_audit_data_created">Criado por <b>%1$s</b> em <b>%2$s</b></string>
+    <string name="title_audit_data_modified">Última modificação por <b>%1$s</b> em <b>%2$s</b></string>
 
     <string name="action_sign_in">Login</string>
     <string name="action_sign_in_short">Login</string>

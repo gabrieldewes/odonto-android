@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class DateTime implements Serializable {
 
-    DateFormat df = new SimpleDateFormat("dd/MM/yyyy ás hh:MM:ss");
+    DateFormat df = new SimpleDateFormat("dd/MM/yyyy 'ás' hh:MM:ss");
 
     @Expose
     @SerializedName("date")
@@ -31,14 +31,13 @@ public class DateTime implements Serializable {
     @Override
     public String toString() {
         return "DateTime{" +
-                "df=" + df +
-                ", date=" + date +
+                "date=" + date +
                 ", timezoneType=" + timezoneType +
                 ", timezone='" + timezone + '\'' +
                 '}';
     }
 
-    public String toHumanDate() {
+    public String humanReadable() {
         return df.format(this.date);
     }
 

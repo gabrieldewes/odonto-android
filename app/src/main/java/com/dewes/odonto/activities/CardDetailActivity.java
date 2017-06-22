@@ -34,6 +34,8 @@ public class CardDetailActivity extends AppCompatActivity {
     private Card card;
     private TextView tvCardTitle;
     private TextView tvCardWhatafield;
+    private TextView tvCardCreatedByAt;
+    private TextView tvCardLastModifiedByAt;
     private Button btCardActions;
     private Button btCardArchive;
 
@@ -62,6 +64,8 @@ public class CardDetailActivity extends AppCompatActivity {
 
         this.tvCardTitle = (TextView) findViewById(R.id.tvCardTitle);
         this.tvCardWhatafield = (TextView) findViewById(R.id.tvCardWhatafield);
+        this.tvCardCreatedByAt = (TextView) findViewById(R.id.tvCardCreatedByAt);
+        this.tvCardLastModifiedByAt = (TextView) findViewById(R.id.tvCardLastModifiedByAt);
         this.btCardActions = (Button) findViewById(R.id.btCardActions);
         this.btCardArchive = (Button) findViewById(R.id.btCardArchive);
 
@@ -69,6 +73,8 @@ public class CardDetailActivity extends AppCompatActivity {
 
         tvCardTitle.setText(String.format(res.getString(R.string.title_card), card.getId()));
         tvCardWhatafield.setText(card.getWhatafield());
+        tvCardCreatedByAt.setText(String.format(res.getString(R.string.title_audit_data_created), card.getCreatedBy(), card.getCreatedAt().humanReadable()));
+        tvCardLastModifiedByAt.setText(String.format(res.getString(R.string.title_audit_data_modified), card.getLastModifiedBy(), card.getLastModifiedAt().humanReadable()));
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         progressView = findViewById(R.id.fragment_card_progress);
