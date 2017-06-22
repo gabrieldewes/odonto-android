@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -73,8 +74,8 @@ public class CardDetailActivity extends AppCompatActivity {
 
         tvCardTitle.setText(String.format(res.getString(R.string.title_card), card.getId()));
         tvCardWhatafield.setText(card.getWhatafield());
-        tvCardCreatedByAt.setText(String.format(res.getString(R.string.title_audit_data_created), card.getCreatedBy(), card.getCreatedAt().humanReadable()));
-        tvCardLastModifiedByAt.setText(String.format(res.getString(R.string.title_audit_data_modified), card.getLastModifiedBy(), card.getLastModifiedAt().humanReadable()));
+        tvCardCreatedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_created), card.getCreatedBy(), card.getCreatedAt().humanReadable())));
+        tvCardLastModifiedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_modified), card.getLastModifiedBy(), card.getLastModifiedAt().humanReadable())));
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         progressView = findViewById(R.id.fragment_card_progress);
