@@ -1,12 +1,11 @@
 package com.dewes.odonto.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.dewes.odonto.R;
+import com.dewes.odonto.authenticator.AuthenticatorActivity;
 import com.dewes.odonto.services.AuthService;
 
 public class SplashActivity extends AppCompatActivity {
@@ -25,6 +24,7 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                /*
                 SplashActivity.this.finish();
                 if (authService.isAuthenticated()) {
                     SplashActivity.this.startActivity(
@@ -34,6 +34,9 @@ public class SplashActivity extends AppCompatActivity {
                     SplashActivity.this.startActivity(
                             new Intent(SplashActivity.this, LoginActivity.class));
                 }
+                */
+                SplashActivity.this.startActivity(
+                        new Intent(SplashActivity.this, AuthenticatorActivity.class));
             }
         }, 1000);
     }

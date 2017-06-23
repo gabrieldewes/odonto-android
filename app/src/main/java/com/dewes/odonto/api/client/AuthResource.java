@@ -7,6 +7,8 @@ import com.dewes.odonto.domain.Token;
 import com.dewes.odonto.domain.UserCredentials;
 import com.dewes.odonto.util.Preferences;
 
+import java.io.IOException;
+
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -16,7 +18,15 @@ import retrofit2.Response;
 
 public class AuthResource {
 
+    private static AuthResource INSTANCE;
+
     private AuthApi authApi;
+
+    public static AuthResource getInstance() {
+        if (INSTANCE == null)
+            INSTANCE = new AuthResource();
+        return INSTANCE;
+    }
 
     public AuthResource(String token) {
         this.authApi = ServiceGenerator.createService(AuthApi.class, token);
@@ -43,6 +53,21 @@ public class AuthResource {
             }
         });
         return call;
+    }
+
+    public String callForToken(String login, String password) {
+        UserCredentials uc = new UserCredentials(login, password);
+        Call<Status<Token>> call = this.authApi.callForToken(uc);
+        try {
+            Response<Status<Token>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body().getData().getToken();
+            }
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     public Call logout(final Callback<Status> callback) {

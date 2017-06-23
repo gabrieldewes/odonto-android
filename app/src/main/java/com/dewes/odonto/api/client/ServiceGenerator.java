@@ -22,11 +22,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceGenerator {
 
-    private Context context;
-
     //private static String API_URL = "http://104.131.172.28/api/";
-    private static String API_URL = "http://10.0.0.10/odonto/api/";
-    //private static final String API_URL = "http://192.168.0.101/odonto/api/";
+    //private static String API_URL = "http://10.0.0.10/odonto/api/";
+    private static final String API_URL = "http://192.168.0.104/odonto/api/";
 
     private static final String CLIENT_ID = "android";
     private static final String CLIENT_SECRET = "android-secret";
@@ -51,8 +49,8 @@ public class ServiceGenerator {
                     public Response intercept(Chain chain) throws IOException {
                         Request original = chain.request();
                         Request.Builder requestBuilder = original.newBuilder()
-                                .header("Authorization", getClientCredentials())
                                 .header("Content-Type", "application/json")
+                                .header("Authorization", getClientCredentials())
                                 .method(original.method(), original.body());
                         Request request = requestBuilder.build();
                         return chain.proceed(request);
@@ -71,9 +69,9 @@ public class ServiceGenerator {
                     public Response intercept(Chain chain) throws IOException {
                         Request original = chain.request();
                         Request.Builder requestBuilder = original.newBuilder()
+                                .header("Content-Type", "application/json")
                                 .header("Authorization", getClientCredentials())
                                 .header("X-API-TOKEN", token)
-                                .header("Content-Type", "application/json")
                                 .method(original.method(), original.body());
                         Request request = requestBuilder.build();
                         return chain.proceed(request);

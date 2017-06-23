@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
 
     <application
         android:allowBackup="true"
@@ -39,7 +40,17 @@
             android:label="@string/title_activity_main" />
         <activity
             android:name=".activities.CardCreateActivity"
-            android:label="@string/title_activity_create_card"/>
+            android:label="@string/title_activity_create_card" />
+        <activity android:name=".authenticator.AuthenticatorActivity"></activity>
+
+
+        <service android:name=".authenticator.AppAuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
     </application>
 
 </manifest>
