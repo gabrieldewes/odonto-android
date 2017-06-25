@@ -65,17 +65,17 @@ public class CardResource {
         return call;
     }
 
-    public Call findAll(boolean archive, final Callback<List<Card>> callback) {
+    public Call findAll(boolean archive, int page, final Callback<List<Card>> callback) {
         if (archive) {
-            return this.findAllArchived(callback);
+            return this.findAllArchived(page, callback);
         }
         else {
-            return this.findAll(callback);
+            return this.findAll(page, callback);
         }
     }
 
-    public Call findAll(final Callback<List<Card>> callback) {
-        Call<List<Card>> call = this.cardApi.findAll();
+    public Call findAll(int page, final Callback<List<Card>> callback) {
+        Call<List<Card>> call = this.cardApi.findAll(page);
         call.enqueue(new retrofit2.Callback<List<Card>>() {
             @Override
             public void onResponse(Call<List<Card>> call, Response<List<Card>> response) {
@@ -92,8 +92,8 @@ public class CardResource {
         return call;
     }
 
-    public Call findAllArchived(final Callback<List<Card>> callback) {
-        Call<List<Card>> call = this.cardApi.findAllArchived();
+    public Call findAllArchived(int page, final Callback<List<Card>> callback) {
+        Call<List<Card>> call = this.cardApi.findAllArchived(page);
         call.enqueue(new retrofit2.Callback<List<Card>>() {
             @Override
             public void onResponse(Call<List<Card>> call, Response<List<Card>> response) {
@@ -158,8 +158,8 @@ public class CardResource {
         return call;
     }
 
-    public Call getActions(Long cardId, final Callback<List<Action>> callback) {
-        Call<List<Action>> call = this.cardApi.getActions(cardId);
+    public Call getActions(Long cardId, int page, final Callback<List<Action>> callback) {
+        Call<List<Action>> call = this.cardApi.getActions(cardId, page);
         call.enqueue(new retrofit2.Callback<List<Action>>() {
             @Override
             public void onResponse(Call<List<Action>> call, Response<List<Action>> response) {

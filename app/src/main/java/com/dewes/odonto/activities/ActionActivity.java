@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
@@ -22,8 +23,11 @@ import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.api.client.CardResource;
 import com.dewes.odonto.domain.Action;
 import com.dewes.odonto.domain.Card;
+import com.dewes.odonto.listeners.EndlessRecyclerOnScrollListener;
 
 import java.util.List;
+
+import retrofit2.Call;
 
 public class ActionActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -36,6 +40,12 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
     private View progressView;
     private View emptyView;
 
+    private EndlessRecyclerOnScrollListener endlessScrollListener;
+
+    private Call currentCall;
+
+    private Resources res;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +53,8 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
 
         if (getIntent().getExtras() == null)
             finish();
+
+        res = getResources();
 
         card = (Card) getIntent().getExtras().get("card");
 
@@ -55,21 +67,20 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
 
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        RecyclerView.LayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layout);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-        CardResource.getInstance().getActions(card.getId(), new Callback<List<Action>>() {
+        CardResource.getInstance().getActions(card.getId(), 1, new Callback<List<Action>>() {
             @Override
             public void onResult(List<Action> actions) {
+                Log.d("API", "onResult "+ actions);
                 showProgress(false);
                 actionAdapter = new ActionAdapter(ActionActivity.this, actions);
                 recyclerView.setAdapter(actionAdapter);
-
-                Log.d("API", "API ACTIONS "+ actions.size());
 
                 if (actions.isEmpty()) {
                     recyclerView.setVisibility(View.GONE);
@@ -86,6 +97,31 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
                 Snackbar.make(recyclerView, getResources().getText(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
             }
         });
+
+        endlessScrollListener = new EndlessRecyclerOnScrollListener( (LinearLayoutManager) layoutManager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                Log.d("API", "Loading more "+ current_page);
+                currentCall = CardResource.getInstance().getActions(card.getId(), current_page, new Callback<List<Action>>() {
+                    @Override
+                    public void onResult(List<Action> actions) {
+                        Log.d("API", "onResult "+ actions);
+
+                        if (actions != null && !actions.isEmpty()) {
+                            actionAdapter.reloadList(actions);
+                        }
+                    }
+
+                    @Override
+                    public void onError() {
+                        showProgress(false);
+                        Snackbar.make(recyclerView, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+                    }
+                });
+            }
+        };
+
+        recyclerView.setOnScrollListener(endlessScrollListener);
     }
 
     public static Intent getIntent(Context context, Card card) {
@@ -113,6 +149,33 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
 
     @Override
     public void onRefresh() {
+        CardResource.getInstance().getActions(card.getId(), 1, new Callback<List<Action>>() {
+            @Override
+            public void onResult(List<Action> actions) {
+                Log.d("API", "onResult "+ actions);
+                showProgress(false);
+                swipeRefreshLayout.setRefreshing(false);
+                endlessScrollListener.reset();
+                actionAdapter = new ActionAdapter(ActionActivity.this, actions);
+                recyclerView.setAdapter(actionAdapter);
+
+                if (actions.isEmpty()) {
+                    recyclerView.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.VISIBLE);
+                }
+                else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onError() {
+                showProgress(false);
+                swipeRefreshLayout.setRefreshing(false);
+                Snackbar.make(recyclerView, getResources().getText(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+            }
+        });
 
     }
 }

@@ -39,6 +39,7 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private EndlessRecyclerOnScrollListener endlessScrollListener;
     private CardAdapter cardAdapter;
     private View progressView;
     private View emptyView;
@@ -79,14 +80,14 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
             swipeRefreshLayout.setOnRefreshListener(this);
 
-            RecyclerView.LayoutManager layout = new LinearLayoutManager(fragmentContainer.getContext(), LinearLayoutManager.VERTICAL, false);
-            recyclerView.setLayoutManager(layout);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(fragmentContainer.getContext(), LinearLayoutManager.VERTICAL, false);
+            recyclerView.setLayoutManager(layoutManager);
             recyclerView.setHasFixedSize(true);
             recyclerView.setItemViewCacheSize(20);
             recyclerView.setDrawingCacheEnabled(true);
             recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-            currentCall = CardResource.getInstance().findAll(archive, new Callback<List<Card>>() {
+            currentCall = CardResource.getInstance().findAll(archive, 1, new Callback<List<Card>>() {
                 @Override
                 public void onResult(List<Card> cards) {
                     showProgress(false);
@@ -113,12 +114,30 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 }
             });
 
-            recyclerView.setOnScrollListener(new EndlessRecyclerOnScrollListener( (LinearLayoutManager) layout) {
+            endlessScrollListener = new EndlessRecyclerOnScrollListener( (LinearLayoutManager) layoutManager) {
                 @Override
                 public void onLoadMore(int current_page) {
-                    Log.d("API", "Load More "+ current_page);
+                    Log.d("API", "Loading more "+ current_page);
+                    currentCall = CardResource.getInstance().findAll(archive, current_page, new Callback<List<Card>>() {
+                        @Override
+                        public void onResult(List<Card> cards) {
+                            Log.d("API", "onResult "+ cards);
+
+                            if (cards != null && !cards.isEmpty()) {
+                                cardAdapter.reloadList(cards);
+                            }
+                        }
+
+                        @Override
+                        public void onError() {
+                            showProgress(false);
+                            Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+                        }
+                    });
                 }
-            });
+            };
+
+            recyclerView.setOnScrollListener(endlessScrollListener);
         }
     }
 
@@ -132,13 +151,14 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
-        currentCall = CardResource.getInstance().findAll(archive, new Callback<List<Card>>() {
+        currentCall = CardResource.getInstance().findAll(archive, 1, new Callback<List<Card>>() {
             @Override
             public void onResult(List<Card> cards) {
                 showProgress(false);
                 swipeRefreshLayout.setRefreshing(false);
 
                 if (cards != null) {
+                    endlessScrollListener.reset();
                     cardAdapter = new CardAdapter(getContext(), cards);
                     recyclerView.setAdapter(cardAdapter);
 
@@ -174,9 +194,21 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     progressView.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
+
+            /*
+            recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
+            recyclerView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+            */
         }
         else {
             progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            //recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 

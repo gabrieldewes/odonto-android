@@ -23,19 +23,16 @@ import retrofit2.http.Query;
 public interface CardApi {
 
     @GET("cards")
-    Call<List<Card>> findAll();
+    Call<List<Card>> findAll(@Query("page") int page);
 
     @GET("cards/archive")
-    Call<List<Card>> findAllArchived();
+    Call<List<Card>> findAllArchived(@Query("page") int page);
 
     @GET("cards/{cardId}")
     Call<Card> findById(@Path("cardId") Long cardId);
 
     @PUT("cards/{cardId}/archive")
     Call<Status<Card>> archive(@Body Boolean archive, @Path("cardId") Long cardId);
-
-    @PUT("cards/{cardId}/archive")
-    Call<Status> archiveRAW(@Body Boolean archive, @Path("cardId") Long cardId);
 
     @POST("cards")
     Call<Status<Card>> save(@Body Card c);
@@ -53,7 +50,7 @@ public interface CardApi {
     Call<Attachment> findAttachmentById(@Path("cardId") Long cardId, @Path("attachmentId") Long attachmentId);
 
     @GET("cards/{cardId}/actions")
-    Call<List<Action>> getActions(@Path("cardId") Long cardId);
+    Call<List<Action>> getActions(@Path("cardId") Long cardId, @Query("page") int page);
 
     @GET("cards/{cardId}/actions/{actionId}")
     Call<Action> findActionById(@Path("cardId") Long cardId, @Path("actionId") Long actionId);

@@ -3,6 +3,7 @@ package com.dewes.odonto.adapters;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dewes.odonto.R;
-import com.dewes.odonto.activities.CardDetailActivity;
 import com.dewes.odonto.domain.Action;
-import com.dewes.odonto.domain.Card;
 
 import java.util.List;
 
@@ -50,6 +49,13 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
     @Override
     public int getItemCount() {
         return actions.size();
+    }
+
+    public void reloadList(List<Action> moreActions) {
+        Log.d("API", "reloadList appended "+ moreActions.size());
+        this.actions.addAll(moreActions);
+        //notifyItemInserted(moreCards.size() - 1);
+        notifyDataSetChanged();
     }
 
     public class ActionViewHolder extends RecyclerView.ViewHolder {
