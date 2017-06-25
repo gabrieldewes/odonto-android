@@ -1,6 +1,7 @@
 package com.dewes.odonto.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,7 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dewes.odonto.R;
+import com.dewes.odonto.activities.ActionDetailActivity;
 import com.dewes.odonto.domain.Action;
+import com.dewes.odonto.domain.Card;
 
 import java.util.List;
 
@@ -23,11 +26,13 @@ import java.util.List;
 public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionViewHolder> {
 
     private Context context;
+    private Card card;
     private List<Action> actions;
     private Resources res;
 
-    public ActionAdapter(Context context, List<Action> actions) {
+    public ActionAdapter(Context context, Card card, List<Action> actions) {
         this.context = context;
+        this.card = card;
         this.actions = actions;
         this.res = this.context.getResources();
     }
@@ -77,7 +82,9 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             btActionView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                Toast.makeText(itemView.getContext(), "view", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(itemView.getContext(), "view", Toast.LENGTH_LONG).show();
+                    context.startActivity(
+                            ActionDetailActivity.getIntent(context, card, actionItem));
                 }
             });
         }

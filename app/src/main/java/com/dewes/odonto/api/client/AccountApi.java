@@ -11,6 +11,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 /**
  * Created by Dewes on 13/06/2017.
@@ -23,4 +24,8 @@ public interface AccountApi {
 
     @GET("account/me")
     Call<Principal> me();
+
+    @GET("account/{login}")
+    Call<Principal> findProfileByLogin(@Path("login") String login);
+
 }

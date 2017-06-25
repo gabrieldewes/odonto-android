@@ -81,4 +81,24 @@ public class AccountResource {
         return call;
     }
 
+    public Call findProfileByLogin(String login, final Callback<Principal> callback) {
+        Call<Principal> call = this.accountApi.findProfileByLogin(login);
+        call.enqueue(new retrofit2.Callback<Principal>() {
+            @Override
+            public void onResponse(Call<Principal> call, Response<Principal> response) {
+                callback.onResult(response.body());
+                if (response.errorBody() != null)
+                    parseErrorBody(response.errorBody());
+            }
+
+            @Override
+            public void onFailure(Call<Principal> call, Throwable t) {
+                t.printStackTrace();
+                if (!call.isCanceled())
+                    callback.onError();
+            }
+        });
+        return call;
+    }
+
 }

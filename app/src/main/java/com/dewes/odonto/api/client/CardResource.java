@@ -181,6 +181,18 @@ public class CardResource {
 
     public Call getActionAttachments(Long cardId, Long actionId, final Callback<List<Attachment>> callback) {
         Call<List<Attachment>> call = this.cardApi.getActionAttachments(cardId, actionId);
+        call.enqueue(new retrofit2.Callback<List<Attachment>>() {
+            @Override
+            public void onResponse(Call<List<Attachment>> call, Response<List<Attachment>> response) {
+                callback.onResult(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<Attachment>> call, Throwable t) {
+                if (!call.isCanceled())
+                    callback.onError();
+            }
+        });
         return call;
     }
 

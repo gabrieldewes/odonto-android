@@ -79,16 +79,18 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
             public void onResult(List<Action> actions) {
                 Log.d("API", "onResult "+ actions);
                 showProgress(false);
-                actionAdapter = new ActionAdapter(ActionActivity.this, actions);
-                recyclerView.setAdapter(actionAdapter);
+                if (actions != null) {
+                    actionAdapter = new ActionAdapter(ActionActivity.this, card, actions);
+                    recyclerView.setAdapter(actionAdapter);
 
-                if (actions.isEmpty()) {
-                    recyclerView.setVisibility(View.GONE);
-                    emptyView.setVisibility(View.VISIBLE);
-                }
-                else {
-                    recyclerView.setVisibility(View.VISIBLE);
-                    emptyView.setVisibility(View.GONE);
+                    if (actions.isEmpty()) {
+                        recyclerView.setVisibility(View.GONE);
+                        emptyView.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        recyclerView.setVisibility(View.VISIBLE);
+                        emptyView.setVisibility(View.GONE);
+                    }
                 }
             }
 
@@ -155,17 +157,19 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
                 Log.d("API", "onResult "+ actions);
                 showProgress(false);
                 swipeRefreshLayout.setRefreshing(false);
-                endlessScrollListener.reset();
-                actionAdapter = new ActionAdapter(ActionActivity.this, actions);
-                recyclerView.setAdapter(actionAdapter);
+                if (actions != null) {
+                    endlessScrollListener.reset();
+                    actionAdapter = new ActionAdapter(ActionActivity.this, card, actions);
+                    recyclerView.setAdapter(actionAdapter);
 
-                if (actions.isEmpty()) {
-                    recyclerView.setVisibility(View.GONE);
-                    emptyView.setVisibility(View.VISIBLE);
-                }
-                else {
-                    recyclerView.setVisibility(View.VISIBLE);
-                    emptyView.setVisibility(View.GONE);
+                    if (actions.isEmpty()) {
+                        recyclerView.setVisibility(View.GONE);
+                        emptyView.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        recyclerView.setVisibility(View.VISIBLE);
+                        emptyView.setVisibility(View.GONE);
+                    }
                 }
             }
 
