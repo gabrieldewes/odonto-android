@@ -22,19 +22,16 @@ import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.api.client.CardResource;
 import com.dewes.odonto.domain.Action;
 import com.dewes.odonto.domain.Card;
-import com.dewes.odonto.services.AuthService;
 
 import java.util.List;
 
 public class ActionActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     private Card card;
-    private AuthService authService;
-    private ActionAdapter actionAdapter;
 
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private CardResource cardResource;
+    private ActionAdapter actionAdapter;
 
     private View progressView;
     private View emptyView;
@@ -56,9 +53,6 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
 
         showProgress(true);
 
-        authService = AuthService.getInstance(this, true);
-        cardResource = CardResource.getInstance(authService.getToken(), false);
-
         swipeRefreshLayout.setOnRefreshListener(this);
 
         RecyclerView.LayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -68,7 +62,7 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-        cardResource.getActions(card.getId(), new Callback<List<Action>>() {
+        CardResource.getInstance().getActions(card.getId(), new Callback<List<Action>>() {
             @Override
             public void onResult(List<Action> actions) {
                 showProgress(false);

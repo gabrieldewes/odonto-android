@@ -28,6 +28,10 @@ public class User extends AbstractEntity implements Serializable {
     private String email;
 
     @Expose
+    @SerializedName("avatarUrl")
+    private String avatarUrl;
+
+    @Expose
     @SerializedName("password")
     private String password;
 
@@ -48,6 +52,7 @@ public class User extends AbstractEntity implements Serializable {
                 ", lastName='" + lastName + '\'' +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

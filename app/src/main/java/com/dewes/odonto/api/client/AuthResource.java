@@ -1,13 +1,12 @@
 package com.dewes.odonto.api.client;
 
-import android.util.Log;
-
 import com.dewes.odonto.domain.Status;
 import com.dewes.odonto.domain.Token;
+import com.dewes.odonto.domain.User;
 import com.dewes.odonto.domain.UserCredentials;
-import com.dewes.odonto.util.Preferences;
 
 import java.io.IOException;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -28,11 +27,7 @@ public class AuthResource {
         return INSTANCE;
     }
 
-    public AuthResource(String token) {
-        this.authApi = ServiceGenerator.createService(AuthApi.class, token);
-    }
-
-    public AuthResource() {
+    private AuthResource() {
         this.authApi = ServiceGenerator.createService(AuthApi.class);
     }
 
@@ -48,6 +43,25 @@ public class AuthResource {
 
             @Override
             public void onFailure(Call<Status<Token>> call, Throwable t) {
+                t.printStackTrace();
+                callback.onError();
+            }
+        });
+        return call;
+    }
+
+    public Call register(String firstName, String lastName, String email, String username, String password,
+                         final Callback<Status<List<Status<User>>>> callback) {
+        User user = new User(firstName, lastName, email, username, password);
+        Call<Status<List<Status<User>>>> call = this.authApi.register(user);
+        call.enqueue(new retrofit2.Callback<Status<List<Status<User>>>>() {
+            @Override
+            public void onResponse(Call<Status<List<Status<User>>>> call, Response<Status<List<Status<User>>>> response) {
+                callback.onResult(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<Status<List<Status<User>>>> call, Throwable t) {
                 t.printStackTrace();
                 callback.onError();
             }
@@ -71,6 +85,7 @@ public class AuthResource {
     }
 
     public Call logout(final Callback<Status> callback) {
+        this.authApi = ServiceGenerator.createAuthenticatedService(AuthApi.class);
         Call<Status> call = this.authApi.callForLogout();
         call.enqueue(new retrofit2.Callback<Status>() {
             @Override

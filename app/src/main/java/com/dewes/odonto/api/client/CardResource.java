@@ -1,16 +1,9 @@
 package com.dewes.odonto.api.client;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-
 import com.dewes.odonto.domain.Action;
 import com.dewes.odonto.domain.Attachment;
 import com.dewes.odonto.domain.Card;
 import com.dewes.odonto.domain.Status;
-import com.dewes.odonto.domain.User;
-import com.dewes.odonto.services.AuthService;
-import com.dewes.odonto.util.Preferences;
-
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -25,15 +18,15 @@ public class CardResource {
 
     private static CardResource INSTANCE;
 
-    public static CardResource getInstance(String token, boolean forceInstantiation) {
-        if (INSTANCE == null || forceInstantiation) {
-            INSTANCE = new CardResource(token, forceInstantiation);
+    public static CardResource getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new CardResource();
         }
         return INSTANCE;
     }
 
-    private CardResource(String token, boolean forceInstantiation) {
-        this.cardApi = ServiceGenerator.createService(CardApi.class, token);
+    private CardResource() {
+        this.cardApi = ServiceGenerator.createAuthenticatedService(CardApi.class);
     }
 
     public Call create(String whatafield, final Callback<Status<Card>> callback) {

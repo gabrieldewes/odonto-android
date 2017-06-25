@@ -9,17 +9,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Layout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import com.dewes.odonto.R;
-import com.dewes.odonto.api.client.AccountResource;
+import com.dewes.odonto.api.client.AuthResource;
 import com.dewes.odonto.api.client.Callback;
-import com.dewes.odonto.domain.Status;
+import com.dewes.odonto.authenticator.AuthenticatorActivity;
 import com.dewes.odonto.domain.User;
 import com.dewes.odonto.util.StringUtils;
 
@@ -207,7 +208,7 @@ public class RegisterActivity extends AppCompatActivity {
         private final String email;
         private final String username;
         private final String password;
-        private final AccountResource accountResource;
+        private final AuthResource authResource;
 
         RegisterTask(String firstName, String lastName, String email, String username, String password) {
             this.firstName = firstName;
@@ -215,7 +216,7 @@ public class RegisterActivity extends AppCompatActivity {
             this.email = email;
             this.username = username;
             this.password = password;
-            this.accountResource = new AccountResource();
+            this.authResource = AuthResource.getInstance();
         }
 
         @Override
@@ -223,7 +224,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             focusView = null;
 
-            currentCall = accountResource.register(firstName, lastName, email, username, password,
+            currentCall = authResource.register(firstName, lastName, email, username, password,
                     new Callback<com.dewes.odonto.domain.Status<List<com.dewes.odonto.domain.Status<User>>>>() {
                 @Override
                 public void onResult(com.dewes.odonto.domain.Status<List<com.dewes.odonto.domain.Status<User>>> status) {
@@ -261,10 +262,9 @@ public class RegisterActivity extends AppCompatActivity {
                             if (status.getData() != null) {
                                 if (status.getData().get(0) != null) {
                                     String email = status.getData().get(0).getData().getEmail();
+                                    Toast.makeText(RegisterActivity.this, String.format(getResources().getString(R.string.success_create_account), email), Toast.LENGTH_LONG).show();
+                                    setResult(RESULT_OK);
                                     RegisterActivity.this.finish();
-                                    RegisterActivity.this.startActivity(
-                                            new Intent(RegisterActivity.this, LoginActivity.class)
-                                                    .putExtra("snackbar", String.format(getResources().getString(R.string.success_create_account), email)));
                                 }
                                 else {
                                     Snackbar.make(registerView, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();

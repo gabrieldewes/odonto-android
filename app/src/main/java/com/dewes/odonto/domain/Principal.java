@@ -33,6 +33,14 @@ public class Principal implements Serializable {
     private String email;
 
     @Expose
+    @SerializedName("avatarUrl")
+    private String avatarUrl;
+
+    @Expose
+    @SerializedName("bio")
+    private String bio;
+
+    @Expose
     @SerializedName("roles")
     private List<String> roles;
 
@@ -44,6 +52,8 @@ public class Principal implements Serializable {
                 ", lastName='" + lastName + '\'' +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
+                ", bio='" + bio + '\'' +
                 ", roles=" + roles +
                 '}';
     }
@@ -86,6 +96,22 @@ public class Principal implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public List<String> getRoles() {

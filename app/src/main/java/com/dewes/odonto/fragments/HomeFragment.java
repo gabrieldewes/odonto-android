@@ -19,10 +19,7 @@ import android.widget.TextView;
 import com.dewes.odonto.R;
 import com.dewes.odonto.api.client.AccountResource;
 import com.dewes.odonto.api.client.Callback;
-import com.dewes.odonto.domain.Principal;
 import com.dewes.odonto.domain.Status;
-import com.dewes.odonto.services.AuthService;
-
 import retrofit2.Call;
 
 /**
@@ -33,8 +30,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private FrameLayout fragmentContainer;
 
-    private AuthService authService;
-
     private TextView tvTitle;
     private TextView tvSubtitle;
 
@@ -43,8 +38,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private Call currentCall;
-
-    private AccountResource accountResource;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -64,16 +57,18 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
             showProgress(true);
 
-            authService = AuthService.getInstance(view.getContext(), false);
-            accountResource = new AccountResource(authService.getToken());
-
-            currentCall = accountResource.greetings(new Callback<Status>() {
+            currentCall = AccountResource.getInstance().greetings(new Callback<Status>() {
                 @Override
                 public void onResult(Status status) {
                     //Log.d("API", "onResult "+ status);
                     showProgress(false);
-                    tvTitle.setText(status.getStatus());
-                    tvSubtitle.setText(status.getMessage());
+                    if (status != null) {
+                        tvTitle.setText(status.getStatus());
+                        tvSubtitle.setText(status.getMessage());
+                    }
+                    else {
+                        Snackbar.make(fragmentContainer, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
+                    }
                 }
 
                 @Override
@@ -146,7 +141,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onRefresh() {
         showProgress(true);
 
-        currentCall = accountResource.greetings(new Callback<Status>() {
+        currentCall = AccountResource.getInstance().greetings(new Callback<Status>() {
             @Override
             public void onResult(Status status) {
                 swipeRefreshLayout.setRefreshing(false);

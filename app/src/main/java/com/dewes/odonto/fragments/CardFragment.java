@@ -3,8 +3,6 @@ package com.dewes.odonto.fragments;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,26 +12,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.dewes.odonto.R;
-import com.dewes.odonto.activities.LoginActivity;
-import com.dewes.odonto.activities.MainActivity;
 import com.dewes.odonto.adapters.CardAdapter;
 import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.api.client.CardResource;
 import com.dewes.odonto.domain.Card;
-import com.dewes.odonto.services.AuthService;
 
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Retrofit;
 
 /**
  * Created by Dewes on 18/06/2017.
@@ -43,11 +35,8 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private FrameLayout fragmentContainer = null;
 
-    private AuthService authService;
-
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private CardResource cardResource;
     private CardAdapter cardAdapter;
     private View progressView;
     private View emptyView;
@@ -86,9 +75,6 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
             showProgress(true);
 
-            authService = AuthService.getInstance(view.getContext(), true);
-            cardResource = CardResource.getInstance(authService.getToken(), false);
-
             swipeRefreshLayout.setOnRefreshListener(this);
 
             RecyclerView.LayoutManager layout = new LinearLayoutManager(fragmentContainer.getContext(), LinearLayoutManager.VERTICAL, false);
@@ -98,7 +84,7 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             recyclerView.setDrawingCacheEnabled(true);
             recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-            currentCall = cardResource.findAll(archive, new Callback<List<Card>>() {
+            currentCall = CardResource.getInstance().findAll(archive, new Callback<List<Card>>() {
                 @Override
                 public void onResult(List<Card> cards) {
                     showProgress(false);
@@ -137,7 +123,7 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
-        currentCall = cardResource.findAll(archive, new Callback<List<Card>>() {
+        currentCall = CardResource.getInstance().findAll(archive, new Callback<List<Card>>() {
             @Override
             public void onResult(List<Card> cards) {
                 showProgress(false);

@@ -28,10 +28,6 @@ import com.dewes.odonto.R;
 import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.api.client.CardResource;
 import com.dewes.odonto.domain.Card;
-import com.dewes.odonto.services.AuthService;
-
-import java.io.FileDescriptor;
-import java.io.IOException;
 
 import retrofit2.Call;
 
@@ -39,8 +35,6 @@ public class CardCreateActivity extends AppCompatActivity {
 
     private CreateCardTask createCardTask = null;
     private Call currentCall;
-    private CardResource cardResource;
-    private AuthService authService;
 
     private EditText etWhatafield;
 
@@ -52,9 +46,6 @@ public class CardCreateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_create);
-
-        authService = AuthService.getInstance(this, false);
-        cardResource = CardResource.getInstance(authService.getToken(), false);
 
         etWhatafield = (EditText) findViewById(R.id.etWhatafield);
 
@@ -117,7 +108,7 @@ public class CardCreateActivity extends AppCompatActivity {
 
             focusView = null;
 
-            currentCall = cardResource.create(whatafield, new Callback<com.dewes.odonto.domain.Status<Card>>() {
+            currentCall = CardResource.getInstance().create(whatafield, new Callback<com.dewes.odonto.domain.Status<Card>>() {
                 @Override
                 public void onResult(com.dewes.odonto.domain.Status<Card> status) {
                     Log.d("API", "Called "+ currentCall.request().url());
