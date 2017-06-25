@@ -221,7 +221,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                                 Snackbar.make(mLoginFormView, getResources().getText(R.string.error_api_response), Snackbar.LENGTH_INDEFINITE).show();
                             }
                         }
-                        else if (status.getStatus().equals("error_account_not_activated")) {
+                        else if (status.getStatus().equals("account_not_activated")) {
+                            mPasswordView.setText("");
                             Snackbar.make(mLoginFormView, getResources().getText(R.string.error_account_not_activated), Snackbar.LENGTH_INDEFINITE)
                                     .setAction("reenviar", new SnackbarClick())
                                     .show();
