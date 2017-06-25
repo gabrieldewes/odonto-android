@@ -26,8 +26,6 @@ import com.dewes.odonto.api.client.CardResource;
 import com.dewes.odonto.domain.Attachment;
 import com.dewes.odonto.domain.Card;
 import com.dewes.odonto.domain.Status;
-import com.dewes.odonto.services.AuthService;
-
 import java.util.List;
 
 public class CardDetailActivity extends AppCompatActivity {
@@ -43,9 +41,6 @@ public class CardDetailActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private View progressView;
     private TextView tvCardAttachment;
-
-    private CardResource cardResource;
-    private AuthService authService;
 
     private AttachmentAdapter attachmentAdapter;
 
@@ -90,10 +85,7 @@ public class CardDetailActivity extends AppCompatActivity {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-        authService = AuthService.getInstance(this, true);
-        cardResource = CardResource.getInstance(authService.getToken(), false);
-
-        cardResource.getAttachments(card.getId(), new Callback<List<Attachment>>() {
+        CardResource.getInstance().getAttachments(card.getId(), new Callback<List<Attachment>>() {
             @Override
             public void onResult(List<Attachment> attachments) {
                 showProgress(false);
@@ -124,7 +116,7 @@ public class CardDetailActivity extends AppCompatActivity {
                 btCardArchive.setTextColor(Color.GRAY);
                 boolean archive = !card.isDeleted();
 
-                cardResource.archive(archive, card.getId(), new Callback<Status<Card>>() {
+                CardResource.getInstance().archive(archive, card.getId(), new Callback<Status<Card>>() {
                     @Override
                     public void onResult(Status<Card> status) {
                         Log.d("API", "onResult "+ status);

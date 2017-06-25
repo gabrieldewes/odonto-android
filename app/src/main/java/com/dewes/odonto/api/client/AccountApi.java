@@ -21,9 +21,6 @@ public interface AccountApi {
     @GET("greetings")
     Call<Status> greetings();
 
-    @POST("account/register")
-    Call<Status<List<Status<User>>>> register(@Body User user);
-
     @GET("account/me")
     Call<Principal> me();
 }

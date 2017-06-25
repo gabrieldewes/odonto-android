@@ -15,14 +15,19 @@ import retrofit2.Response;
 
 public class AccountResource {
 
+    private static AccountResource INSTANCE;
+
     private AccountApi accountApi;
 
-    public AccountResource() {
-        this.accountApi = ServiceGenerator.createService(AccountApi.class);
+    private AccountResource() {
+        this.accountApi = ServiceGenerator.createAuthenticatedService(AccountApi.class);
     }
 
-    public AccountResource(String token) {
-        this.accountApi = ServiceGenerator.createService(AccountApi.class, token);
+    public static AccountResource getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new AccountResource();
+        }
+        return INSTANCE;
     }
 
     public Call greetings(final Callback<Status> callback) {
@@ -57,25 +62,6 @@ public class AccountResource {
                 t.printStackTrace();
                 if (!call.isCanceled())
                     callback.onError();
-            }
-        });
-        return call;
-    }
-
-    public Call register(String firstName, String lastName, String email, String username, String password,
-                         final Callback<Status<List<Status<User>>>> callback) {
-        User user = new User(firstName, lastName, email, username, password);
-        Call<Status<List<Status<User>>>> call = this.accountApi.register(user);
-        call.enqueue(new retrofit2.Callback<Status<List<Status<User>>>>() {
-            @Override
-            public void onResponse(Call<Status<List<Status<User>>>> call, Response<Status<List<Status<User>>>> response) {
-                callback.onResult(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<Status<List<Status<User>>>> call, Throwable t) {
-                t.printStackTrace();
-                callback.onError();
             }
         });
         return call;

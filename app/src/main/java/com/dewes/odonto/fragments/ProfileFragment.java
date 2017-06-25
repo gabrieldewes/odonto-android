@@ -1,5 +1,9 @@
 package com.dewes.odonto.fragments;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -8,8 +12,10 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +24,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.dewes.odonto.R;
-import com.dewes.odonto.activities.LoginActivity;
+import com.dewes.odonto.activities.SplashActivity;
 import com.dewes.odonto.api.client.AccountResource;
 import com.dewes.odonto.api.client.AuthResource;
 import com.dewes.odonto.api.client.Callback;
+import com.dewes.odonto.authenticator.AccountConstants;
 import com.dewes.odonto.domain.Principal;
 import com.dewes.odonto.domain.Status;
-import com.dewes.odonto.services.AuthService;
 import com.dewes.odonto.util.ImageHelper;
 
 import java.util.Random;
@@ -43,10 +48,6 @@ public class ProfileFragment extends Fragment {
 
     private View progressView;
 
-    private AuthService authService;
-
-    private AccountResource accountResource;
-
     private ImageView ivUserProfilePhoto;
     private ImageView ivHeaderCover;
 
@@ -60,9 +61,7 @@ public class ProfileFragment extends Fragment {
 
     private Resources res;
 
-    final Random random = new Random();
-    final String[] p = new String[] {"men", "women"};
-    final String[] b = new String[] {"Disponível", "Ocupado", "No cinema", "Em reunião", "Olá, tenho interesse", "Ola marilene", "Me inclua fora disso"};
+    Random random = new Random();
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -84,13 +83,6 @@ public class ProfileFragment extends Fragment {
 
             Button btLogout = (Button) view.findViewById(R.id.btLogout);
 
-            String userProfilePhotoUrl = "https://randomuser.me/api/portraits/"+ p[random.nextInt(p.length)] +"/"+ random.nextInt(99) +".jpg";
-            new ImageHelper(ivUserProfilePhoto).execute(userProfilePhotoUrl);
-            new ImageHelper(ivHeaderCover, true).execute(userProfilePhotoUrl);
-
-            authService = AuthService.getInstance(view.getContext(), false);
-            accountResource = new AccountResource(authService.getToken());
-
             loadProfile();
 
             btLogout.setOnClickListener(new View.OnClickListener() {
@@ -104,17 +96,19 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadProfile() {
-        currentCall = accountResource.me(new Callback<Principal>() {
+        currentCall = AccountResource.getInstance().me(new Callback<Principal>() {
             @Override
             public void onResult(Principal principal) {
                 showProgress(false);
                 if (principal != null) {
                     String fullName = (principal.getFirstName() +" "+ principal.getLastName()).trim();
                     tvUserProfileName.setText(fullName);
-                    tvUserProfileBio.setText(b[random.nextInt(b.length)]);
+                    tvUserProfileBio.setText(principal.getBio());
                     tvUserProfileEmail.setText(principal.getEmail());
                     tvUserProfileUsername.setText(principal.getUsername());
                     tvUserProfileRoles.setText(principal.getRoles().get(0).replaceAll("ROLE_", ""));
+                    new ImageHelper(ivUserProfilePhoto).execute(principal.getAvatarUrl());
+                    new ImageHelper(ivHeaderCover, true).execute(principal.getAvatarUrl());
                 }
             }
 
@@ -128,16 +122,36 @@ public class ProfileFragment extends Fragment {
 
     private void doLogout() {
         showProgress(true);
-        AuthResource authResource = new AuthResource(authService.getToken());
-        authResource.logout(new Callback<Status>() {
+        AuthResource.getInstance().logout(new Callback<Status>() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
             @Override
             public void onResult(Status status) {
-                showProgress(false);
-                authService.removeToken();
-                getActivity().finish();
-                getActivity().startActivity(
-                        new Intent(getActivity(), LoginActivity.class)
-                                .putExtra("snackbar", res.getString(R.string.success_logged_out)));
+                Log.d("API", "onResult "+ status);
+                AccountManager mAccountManager = AccountManager.get(getContext());
+                final Account account = mAccountManager.getAccountsByType(AccountConstants.ACCOUNT_TYPE)[0];
+                final AccountManagerFuture<Bundle> future = mAccountManager.removeAccount(account, getActivity(),
+                        new AccountManagerCallback<Bundle>() {
+                            @Override
+                            public void run(AccountManagerFuture<Bundle> future) {
+                                Bundle bnd = null;
+                                try {
+                                    bnd = future.getResult();
+
+                                    Log.d("API", "removeAccount " + bnd);
+
+                                    showProgress(false);
+                                    Toast.makeText(getContext(), res.getString(R.string.success_logged_out), Toast.LENGTH_LONG).show();
+                                    getActivity().finish();
+                                    getActivity().startActivity(
+                                            new Intent(getActivity(), SplashActivity.class));
+                                }
+                                catch (Exception e) {
+                                    showProgress(false);
+                                    e.printStackTrace();
+                                    Log.d("API", "Exception "+ e.getMessage());
+                                }
+                            }
+                        }, null);
             }
 
             @Override
