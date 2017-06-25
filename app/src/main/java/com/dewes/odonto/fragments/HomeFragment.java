@@ -60,7 +60,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             currentCall = AccountResource.getInstance().greetings(new Callback<Status>() {
                 @Override
                 public void onResult(Status status) {
-                    //Log.d("API", "onResult "+ status);
+                    Log.d("API", "onResult "+ status);
                     showProgress(false);
                     if (status != null) {
                         tvTitle.setText(status.getStatus());

@@ -85,7 +85,7 @@ public class AuthResource {
     }
 
     public Call logout(final Callback<Status> callback) {
-        this.authApi = ServiceGenerator.createAuthenticatedService(AuthApi.class);
+        this.authApi = ServiceGenerator.createService(AuthApi.class);
         Call<Status> call = this.authApi.callForLogout();
         call.enqueue(new retrofit2.Callback<Status>() {
             @Override

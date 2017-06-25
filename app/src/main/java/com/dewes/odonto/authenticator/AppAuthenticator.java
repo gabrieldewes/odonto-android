@@ -12,8 +12,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.dewes.odonto.api.client.AuthResource;
-
-import static android.accounts.AccountManager.KEY_BOOLEAN_RESULT;
+import static com.dewes.odonto.authenticator.AccountConstants.*;
 
 public class AppAuthenticator extends AbstractAccountAuthenticator {
 
@@ -42,7 +41,6 @@ public class AppAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
-
         Log.d("API", TAG + ".getAuthToken");
 
         if (!authTokenType.equals(AccountConstants.AUTHTOKEN_TYPE_READ_ONLY)
@@ -92,10 +90,10 @@ public class AppAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public String getAuthTokenLabel(String authTokenType) {
-        if (AccountConstants.AUTHTOKEN_TYPE_FULL_ACCESS.equals(authTokenType))
-            return AccountConstants.AUTHTOKEN_TYPE_FULL_ACCESS_LABEL;
-        else if (AccountConstants.AUTHTOKEN_TYPE_READ_ONLY.equals(authTokenType))
-            return AccountConstants.AUTHTOKEN_TYPE_READ_ONLY_LABEL;
+        if (AUTHTOKEN_TYPE_FULL_ACCESS.equals(authTokenType))
+            return AUTHTOKEN_TYPE_FULL_ACCESS_LABEL;
+        else if (AUTHTOKEN_TYPE_READ_ONLY.equals(authTokenType))
+            return AUTHTOKEN_TYPE_READ_ONLY_LABEL;
         else
             return authTokenType + " (Label)";
     }
@@ -103,7 +101,7 @@ public class AppAuthenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account, String[] features) throws NetworkErrorException {
         final Bundle result = new Bundle();
-        result.putBoolean(KEY_BOOLEAN_RESULT, false);
+        result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false);
         return result;
     }
 

@@ -1,5 +1,6 @@
-package com.dewes.odonto.activities;
+package com.dewes.odonto.authenticator;
 
+import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -20,9 +21,8 @@ import android.widget.Toast;
 import com.dewes.odonto.R;
 import com.dewes.odonto.api.client.AuthResource;
 import com.dewes.odonto.api.client.Callback;
-import com.dewes.odonto.authenticator.AuthenticatorActivity;
 import com.dewes.odonto.domain.User;
-import com.dewes.odonto.util.StringUtils;
+import static com.dewes.odonto.util.StringUtils.*;
 
 import java.util.List;
 
@@ -160,16 +160,114 @@ public class RegisterActivity extends AppCompatActivity {
             this.focusView = v;
     }
 
-    private boolean isEmailValid(String email) {
-        return email.contains("@");
-    }
+    private class RegisterTask extends AsyncTask<Void, Void, Boolean> {
+        private final String firstName;
+        private final String lastName;
+        private final String email;
+        private final String username;
+        private final String password;
 
-    private boolean isUsernameValid(String username) {
-        return !username.contains(" ") && !StringUtils.hasSpecial(username) && !StringUtils.hasUpperCase(username);
-    }
+        RegisterTask(String firstName, String lastName, String email, String username, String password) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.email = email;
+            this.username = username;
+            this.password = password;
+        }
 
-    private boolean isPasswordValid(String password) {
-        return password.length() > 3 && !StringUtils.hasSpecial(password);
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            focusView = null;
+
+            currentCall = AuthResource.getInstance().register(firstName, lastName, email, username, password,
+                    new Callback<com.dewes.odonto.domain.Status<List<com.dewes.odonto.domain.Status<User>>>>() {
+                @Override
+                public void onResult(com.dewes.odonto.domain.Status<List<com.dewes.odonto.domain.Status<User>>> status) {
+                    Log.d("API", "onResult "+ status);
+
+                    showProgress(false);
+
+                    if (status != null) {
+                        switch (status.getStatus()) {
+                            case "error_empty_fields":
+                                for (com.dewes.odonto.domain.Status<User> s : status.getData()) {
+                                    switch (s.getStatus()) {
+                                        case "error_already_in_use_email":
+                                            etEmail.setError(getString(R.string.error_already_in_use_email));
+                                            setFocusView(etEmail);
+                                            break;
+                                        case "error_invalid_email":
+                                            etEmail.setError(getString(R.string.error_invalid_email));
+                                            setFocusView(etEmail);
+                                            break;
+                                        case "error_already_in_use_username":
+                                            etUsername.setError(getString(R.string.error_already_in_use_username));
+                                            setFocusView(etUsername);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                                if (focusView != null)
+                                    focusView.requestFocus();
+                                break;
+                            case "error_create_account":
+                                Snackbar.make(registerView, status.getMessage(), Snackbar.LENGTH_LONG).show();
+                                break;
+                            case "success_create_account":
+                                if (status.getData() != null) {
+                                    if (status.getData().get(0) != null) {
+                                        User u = status.getData().get(0).getData();
+                                        String email = u.getEmail();
+                                        Toast.makeText(RegisterActivity.this,
+                                                String.format(getResources().getString(R.string.success_create_account), email),
+                                                Toast.LENGTH_LONG).show();
+
+                                        /*
+                                        Bundle bnd = getIntent().getExtras();
+                                        bnd.putString(AccountManager.KEY_ACCOUNT_NAME, email);
+                                        setResult(RESULT_OK, new Intent().putExtras(bnd));
+                                        */
+                                        RegisterActivity.this.finish();
+                                    }
+                                    else {
+                                        Snackbar.make(registerView, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
+                                    }
+                                }
+                                else {
+                                    Snackbar.make(registerView, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
+                                }
+                                break;
+                        }
+                    }
+                    else {
+                        Snackbar.make(registerView, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onError() {
+                    Log.d("API", "onError");
+                    showProgress(false);
+                    Snackbar.make(registerView, getResources().getText(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+                }
+            });
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            registerTask = null;
+            //showProgress(false);
+        }
+
+        @Override
+        protected void onCancelled() {
+            registerTask = null;
+            showProgress(false);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
@@ -198,111 +296,6 @@ public class RegisterActivity extends AppCompatActivity {
         else {
             progressView.setVisibility(show ? View.VISIBLE : View.GONE);
             registerView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }
-
-    public class RegisterTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String firstName;
-        private final String lastName;
-        private final String email;
-        private final String username;
-        private final String password;
-        private final AuthResource authResource;
-
-        RegisterTask(String firstName, String lastName, String email, String username, String password) {
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.email = email;
-            this.username = username;
-            this.password = password;
-            this.authResource = AuthResource.getInstance();
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-
-            focusView = null;
-
-            currentCall = authResource.register(firstName, lastName, email, username, password,
-                    new Callback<com.dewes.odonto.domain.Status<List<com.dewes.odonto.domain.Status<User>>>>() {
-                @Override
-                public void onResult(com.dewes.odonto.domain.Status<List<com.dewes.odonto.domain.Status<User>>> status) {
-                    Log.d("API", "onResult "+ status);
-
-                    showProgress(false);
-
-                    if (status != null) {
-                        if (status.getStatus().equals("error_empty_fields")) {
-                            for (com.dewes.odonto.domain.Status<User> s : status.getData()) {
-                                switch (s.getStatus()) {
-                                    case "error_already_in_use_email":
-                                        etEmail.setError(getString(R.string.error_already_in_use_email));
-                                        setFocusView(etEmail);
-                                        break;
-                                    case "error_invalid_email":
-                                        etEmail.setError(getString(R.string.error_invalid_email));
-                                        setFocusView(etEmail);
-                                        break;
-                                    case "error_already_in_use_username":
-                                        etUsername.setError(getString(R.string.error_already_in_use_username));
-                                        setFocusView(etUsername);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                            if (focusView != null)
-                                focusView.requestFocus();
-                        }
-                        else if (status.getStatus().equals("error_create_account")) {
-                            Snackbar.make(registerView, status.getMessage(), Snackbar.LENGTH_LONG).show();
-                        }
-                        else if (status.getStatus().equals("success_create_account")) {
-                            if (status.getData() != null) {
-                                if (status.getData().get(0) != null) {
-                                    String email = status.getData().get(0).getData().getEmail();
-                                    Toast.makeText(RegisterActivity.this, String.format(getResources().getString(R.string.success_create_account), email), Toast.LENGTH_LONG).show();
-                                    setResult(RESULT_OK);
-                                    RegisterActivity.this.finish();
-                                }
-                                else {
-                                    Snackbar.make(registerView, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
-                                }
-                            }
-                            else {
-                                Snackbar.make(registerView, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
-                            }
-                        }
-                    }
-                    else {
-                        Snackbar.make(registerView, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onError() {
-                    Log.d("API", "onError");
-                    showProgress(false);
-                    Snackbar.make(registerView, getResources().getText(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
-                }
-            });
-
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            registerTask = null;
-            //showProgress(false);
-
-            if (success) {} else {}
-        }
-
-        @Override
-        protected void onCancelled() {
-            registerTask = null;
-            showProgress(false);
         }
     }
 

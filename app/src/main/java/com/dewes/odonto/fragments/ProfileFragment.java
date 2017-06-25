@@ -30,6 +30,7 @@ import com.dewes.odonto.api.client.AccountResource;
 import com.dewes.odonto.api.client.AuthResource;
 import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.authenticator.AccountConstants;
+import com.dewes.odonto.authenticator.AppAuthenticator;
 import com.dewes.odonto.domain.Principal;
 import com.dewes.odonto.domain.Status;
 import com.dewes.odonto.util.ImageHelper;
@@ -60,8 +61,6 @@ public class ProfileFragment extends Fragment {
     private Call currentCall;
 
     private Resources res;
-
-    Random random = new Random();
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -133,17 +132,13 @@ public class ProfileFragment extends Fragment {
                         new AccountManagerCallback<Bundle>() {
                             @Override
                             public void run(AccountManagerFuture<Bundle> future) {
-                                Bundle bnd = null;
                                 try {
-                                    bnd = future.getResult();
-
+                                    Bundle bnd = future.getResult();
                                     Log.d("API", "removeAccount " + bnd);
-
                                     showProgress(false);
                                     Toast.makeText(getContext(), res.getString(R.string.success_logged_out), Toast.LENGTH_LONG).show();
                                     getActivity().finish();
-                                    getActivity().startActivity(
-                                            new Intent(getActivity(), SplashActivity.class));
+                                    getActivity().startActivity(new Intent(getActivity(), SplashActivity.class));
                                 }
                                 catch (Exception e) {
                                     showProgress(false);

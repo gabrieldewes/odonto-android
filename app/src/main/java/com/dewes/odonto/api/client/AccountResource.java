@@ -5,9 +5,19 @@ import android.util.Log;
 import com.dewes.odonto.domain.Principal;
 import com.dewes.odonto.domain.User;
 import com.dewes.odonto.domain.Status;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
+
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
+import retrofit2.http.Body;
+
+import static com.dewes.odonto.api.client.Utils.parseErrorBody;
 
 /**
  * Created by Dewes on 13/06/2017.
@@ -20,7 +30,7 @@ public class AccountResource {
     private AccountApi accountApi;
 
     private AccountResource() {
-        this.accountApi = ServiceGenerator.createAuthenticatedService(AccountApi.class);
+        this.accountApi = ServiceGenerator.createService(AccountApi.class);
     }
 
     public static AccountResource getInstance() {
@@ -37,6 +47,8 @@ public class AccountResource {
             @Override
             public void onResponse(Call<Status> call, Response<Status> response) {
                 callback.onResult(response.body());
+                if (response.errorBody() != null)
+                    parseErrorBody(response.errorBody());
             }
 
             @Override
@@ -55,6 +67,8 @@ public class AccountResource {
             @Override
             public void onResponse(Call<Principal> call, Response<Principal> response) {
                 callback.onResult(response.body());
+                if (response.errorBody() != null)
+                    parseErrorBody(response.errorBody());
             }
 
             @Override

@@ -19,12 +19,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.dewes.odonto.R;
-import com.dewes.odonto.activities.RegisterActivity;
 import com.dewes.odonto.api.client.AuthResource;
 import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.api.client.ServiceGenerator;
 import com.dewes.odonto.domain.Token;
-import com.dewes.odonto.util.StringUtils;
+import static com.dewes.odonto.util.StringUtils.*;
 import static com.dewes.odonto.authenticator.AccountConstants.*;
 
 public class AuthenticatorActivity extends AccountAuthenticatorActivity {
@@ -89,8 +88,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQ_SIGNUP && resultCode == RESULT_OK) {}
-        else super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_SIGNUP && resultCode == RESULT_OK) {
+
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void attemptLogin() {
@@ -107,7 +110,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         boolean cancel = false;
         View focusView = null;
 
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        }
+        else if (!isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -131,14 +139,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
-    }
-
-    private boolean isLoginValid(String login) {
-        return !login.contains(" ") && !StringUtils.hasUpperCase(login);
-    }
-
-    private boolean isPasswordValid(String password) {
-        return password.length() > 3 && !StringUtils.hasSpecial(password);
     }
 
     private void finishLogin(Intent intent) {
@@ -194,6 +194,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     Log.d("API", "onResult "+ status);
 
                     showProgress(false);
+                    mPasswordView.setText("");
 
                     if (status != null) {
                         if (status.getStatus().equals("connected") || status.getStatus().equals("already_connected")) {
@@ -201,34 +202,33 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                             if (token != null) {
 
                                 final String accountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
-                                Bundle data = new Bundle();
+                                Bundle bnd = new Bundle();
                                 try {
                                     String authToken = token.getToken();
-                                    data.putString(AccountManager.KEY_ACCOUNT_NAME, mEmail);
-                                    data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
-                                    data.putString(AccountManager.KEY_AUTHTOKEN, authToken);
-                                    data.putString(PARAM_USER_PASS, mPassword);
+                                    bnd.putString(AccountManager.KEY_ACCOUNT_NAME, mEmail);
+                                    bnd.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
+                                    bnd.putString(AccountManager.KEY_AUTHTOKEN, authToken);
+                                    bnd.putString(PARAM_USER_PASS, mPassword);
                                 }
                                 catch (Exception e) {
-                                    data.putString(KEY_ERROR_MESSAGE, e.getMessage());
+                                    bnd.putString(KEY_ERROR_MESSAGE, e.getMessage());
                                 }
 
-                                finishLogin(
-                                        new Intent()
-                                                .putExtras(data));
+                                finishLogin(new Intent().putExtras(bnd));
                             }
                             else {
                                 Snackbar.make(mLoginFormView, getResources().getText(R.string.error_api_response), Snackbar.LENGTH_INDEFINITE).show();
                             }
                         }
                         else if (status.getStatus().equals("account_not_activated")) {
-                            mPasswordView.setText("");
                             Snackbar.make(mLoginFormView, getResources().getText(R.string.error_account_not_activated), Snackbar.LENGTH_INDEFINITE)
                                     .setAction("reenviar", new SnackbarClick())
                                     .show();
                         }
+                        else if (status.getStatus().equals("error_create_token")) {
+                            Snackbar.make(mLoginFormView, getResources().getText(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
+                        }
                         else {
-                            mPasswordView.setText("");
                             Snackbar.make(mLoginFormView, getResources().getText(R.string.error_bad_credentials), Snackbar.LENGTH_LONG).show();
                         }
 

@@ -26,7 +26,7 @@ public class CardResource {
     }
 
     private CardResource() {
-        this.cardApi = ServiceGenerator.createAuthenticatedService(CardApi.class);
+        this.cardApi = ServiceGenerator.createService(CardApi.class);
     }
 
     public Call create(String whatafield, final Callback<Status<Card>> callback) {

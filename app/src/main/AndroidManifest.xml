@@ -9,6 +9,10 @@
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
 
+    <uses-permission
+        android:name="android.permission.USE_CREDENTIALS"
+        android:maxSdkVersion="22" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_round"
@@ -20,7 +24,7 @@
             android:name=".authenticator.AuthenticatorActivity"
             android:label="@string/title_activity_login" />
         <activity
-            android:name=".activities.RegisterActivity"
+            android:name=".authenticator.RegisterActivity"
             android:label="@string/title_activity_register" />
         <activity
             android:name=".activities.CardDetailActivity"

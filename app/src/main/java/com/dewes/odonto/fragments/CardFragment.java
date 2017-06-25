@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.dewes.odonto.adapters.CardAdapter;
 import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.api.client.CardResource;
 import com.dewes.odonto.domain.Card;
+import com.dewes.odonto.listeners.EndlessRecyclerOnScrollListener;
 
 import java.util.List;
 
@@ -108,6 +110,13 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 public void onError() {
                     showProgress(false);
                     Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+                }
+            });
+
+            recyclerView.setOnScrollListener(new EndlessRecyclerOnScrollListener( (LinearLayoutManager) layout) {
+                @Override
+                public void onLoadMore(int current_page) {
+                    Log.d("API", "Load More "+ current_page);
                 }
             });
         }

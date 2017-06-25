@@ -29,7 +29,7 @@ public class ServiceGenerator {
     private static final String CLIENT_ID = "android";
     private static final String CLIENT_SECRET = "android-secret";
 
-    private static String X_API_TOKEN;
+    private static String X_API_TOKEN = "";
 
     private static Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -49,26 +49,6 @@ public class ServiceGenerator {
     }
 
     public static <S> S createService(Class<S> service) {
-        OkHttpClient httpClient = new OkHttpClient.Builder()
-                .addInterceptor(new Interceptor() {
-                    @Override
-                    public Response intercept(Chain chain) throws IOException {
-                        Request original = chain.request();
-                        Request.Builder requestBuilder = original.newBuilder()
-                                .header("Content-Type", "application/json")
-                                .header("Authorization", getClientCredentials())
-                                .method(original.method(), original.body());
-                        Request request = requestBuilder.build();
-                        return chain.proceed(request);
-                    }
-                }).build();
-        return retrofitBuilder
-                .client(httpClient)
-                .build()
-                .create(service);
-    }
-
-    public static <S> S createAuthenticatedService(Class<S> service) {
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {
                     @Override
