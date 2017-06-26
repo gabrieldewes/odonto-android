@@ -121,7 +121,7 @@ public class ProfileFragment extends Fragment {
 
     private void doLogout() {
         showProgress(true);
-        AuthResource.getInstance().logout(new Callback<Status>() {
+        AuthResource.getInstance().revoke(new Callback<Status>() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
             @Override
             public void onResult(Status status) {

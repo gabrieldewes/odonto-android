@@ -19,13 +19,13 @@ import retrofit2.http.Path;
 
 public interface AccountApi {
 
-    @GET("greetings")
-    Call<Status> greetings();
-
-    @GET("account/me")
+    @GET("accounts/me")
     Call<Principal> me();
 
-    @GET("account/{login}")
+    @GET("accounts/{login}")
     Call<Principal> findProfileByLogin(@Path("login") String login);
+
+    @POST("accounts/register")
+    Call<Status<List<Status<User>>>> register(@Body User user);
 
 }

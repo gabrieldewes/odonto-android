@@ -40,27 +40,6 @@ public class AccountResource {
         return INSTANCE;
     }
 
-    public Call greetings(final Callback<Status> callback) {
-        Call<Status> call = this.accountApi.greetings();
-        //Log.d("API", "Calling "+ call.request().url());
-        call.enqueue(new retrofit2.Callback<Status>() {
-            @Override
-            public void onResponse(Call<Status> call, Response<Status> response) {
-                callback.onResult(response.body());
-                if (response.errorBody() != null)
-                    parseErrorBody(response.errorBody());
-            }
-
-            @Override
-            public void onFailure(Call<Status> call, Throwable t) {
-                t.printStackTrace();
-                if (!call.isCanceled())
-                    callback.onError();
-            }
-        });
-        return call;
-    }
-
     public Call me(final Callback<Principal> callback) {
         Call<Principal> call = this.accountApi.me();
         call.enqueue(new retrofit2.Callback<Principal>() {
@@ -96,6 +75,25 @@ public class AccountResource {
                 t.printStackTrace();
                 if (!call.isCanceled())
                     callback.onError();
+            }
+        });
+        return call;
+    }
+
+    public Call register(String firstName, String lastName, String email, String username, String password,
+                         final Callback<Status<List<Status<User>>>> callback) {
+        User user = new User(firstName, lastName, email, username, password);
+        Call<Status<List<Status<User>>>> call = this.accountApi.register(user);
+        call.enqueue(new retrofit2.Callback<Status<List<Status<User>>>>() {
+            @Override
+            public void onResponse(Call<Status<List<Status<User>>>> call, Response<Status<List<Status<User>>>> response) {
+                callback.onResult(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<Status<List<Status<User>>>> call, Throwable t) {
+                t.printStackTrace();
+                callback.onError();
             }
         });
         return call;

@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.dewes.odonto.R;
+import com.dewes.odonto.api.client.AccountResource;
 import com.dewes.odonto.api.client.AuthResource;
 import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.domain.User;
@@ -180,7 +181,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             focusView = null;
 
-            currentCall = AuthResource.getInstance().register(firstName, lastName, email, username, password,
+            currentCall = AccountResource.getInstance().register(firstName, lastName, email, username, password,
                     new Callback<com.dewes.odonto.domain.Status<List<com.dewes.odonto.domain.Status<User>>>>() {
                 @Override
                 public void onResult(com.dewes.odonto.domain.Status<List<com.dewes.odonto.domain.Status<User>>> status) {
