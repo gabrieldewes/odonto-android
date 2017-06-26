@@ -28,6 +28,8 @@ import com.dewes.odonto.domain.Card;
 import com.dewes.odonto.domain.Status;
 import java.util.List;
 
+import retrofit2.Call;
+
 public class CardDetailActivity extends AppCompatActivity {
 
     private Card card;
@@ -37,14 +39,12 @@ public class CardDetailActivity extends AppCompatActivity {
     private TextView tvCardLastModifiedByAt;
     private Button btCardActions;
     private Button btCardArchive;
-
     private RecyclerView recyclerView;
     private View progressView;
     private TextView tvCardAttachment;
-
     private AttachmentAdapter attachmentAdapter;
-
     private Resources res;
+    private Call currentCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,16 +67,10 @@ public class CardDetailActivity extends AppCompatActivity {
 
         btCardArchive.setText(card.isDeleted() ? getResources().getText(R.string.action_recover_card) : getResources().getText(R.string.action_archive_card));
 
-        tvCardTitle.setText(String.format(res.getString(R.string.title_card), card.getId()));
-        tvCardWhatafield.setText(card.getWhatafield());
-        tvCardCreatedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_created), card.getCreatedBy(), card.getCreatedAt().humanReadable())));
-        tvCardLastModifiedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_modified), card.getLastModifiedBy(), card.getLastModifiedAt().humanReadable())));
-
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         progressView = findViewById(R.id.fragment_card_progress);
         tvCardAttachment = (TextView) findViewById(R.id.tvCardAttachment);
         tvCardAttachment.setVisibility(View.GONE);
-        showProgress(true);
 
         RecyclerView.LayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layout);
@@ -85,57 +79,10 @@ public class CardDetailActivity extends AppCompatActivity {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-        CardResource.getInstance().getAttachments(card.getId(), new Callback<List<Attachment>>() {
-            @Override
-            public void onResult(List<Attachment> attachments) {
-                showProgress(false);
-                attachmentAdapter = new AttachmentAdapter(CardDetailActivity.this, attachments);
-                recyclerView.setAdapter(attachmentAdapter);
-
-                if (attachments.isEmpty()) {
-                    recyclerView.setVisibility(View.GONE);
-                    tvCardAttachment.setVisibility(View.GONE);
-                }
-                else {
-                    recyclerView.setVisibility(View.VISIBLE);
-                    tvCardAttachment.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onError() {
-                Snackbar.make(findViewById(R.id.scrollView), res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
-            }
-        });
-
         btCardArchive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                btCardArchive.setEnabled(false);
-                btCardArchive.setTextColor(Color.GRAY);
-                boolean archive = !card.isDeleted();
-
-                CardResource.getInstance().archive(archive, card.getId(), new Callback<Status<Card>>() {
-                    @Override
-                    public void onResult(Status<Card> status) {
-                        Log.d("API", "onResult "+ status);
-
-                        card = status.getData();
-                        btCardArchive.setText(status.getData().isDeleted() ? getResources().getText(R.string.action_recover_card) : getResources().getText(R.string.action_archive_card));
-                        btCardArchive.setEnabled(true);
-                        btCardArchive.setTextColor(getResources().getColor(R.color.colorCardButton));
-
-                        Snackbar.make(recyclerView,
-                                (card.isDeleted() ? res.getString(R.string.success_archived_card) : res.getString(R.string.success_recovered_card)), Snackbar.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onError() {
-                        Log.d("API", "onError");
-                        Snackbar.make(recyclerView, res.getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
-                    }
-                });
+                toggleArchiveCard();
             }
         });
 
@@ -146,10 +93,83 @@ public class CardDetailActivity extends AppCompatActivity {
                         ActionActivity.getIntent(CardDetailActivity.this, card));
             }
         });
+
+        populateFields();
+        fetchAttachments();
     }
 
     public static Intent getIntent(Context context, Card card) {
         return new Intent(context, CardDetailActivity.class).putExtra("card", card);
+    }
+
+    private void fetchAttachments() {
+        showProgress(true);
+        currentCall = CardResource.getInstance().getAttachments(card.getId(), new Callback<List<Attachment>>() {
+            @Override
+            public void onResult(List<Attachment> attachments) {
+                showProgress(false);
+
+                if (attachments.isEmpty()) {
+                    recyclerView.setVisibility(View.GONE);
+                    tvCardAttachment.setVisibility(View.GONE);
+                }
+                else {
+                    attachmentAdapter = new AttachmentAdapter(CardDetailActivity.this, attachments);
+                    recyclerView.setAdapter(attachmentAdapter);
+                    recyclerView.setVisibility(View.VISIBLE);
+                    tvCardAttachment.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onError() {
+                showProgress(false);
+                Snackbar.make(findViewById(R.id.scrollView), res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void populateFields() {
+        tvCardTitle.setText(String.format(res.getString(R.string.title_card), card.getId()));
+        tvCardWhatafield.setText(card.getWhatafield());
+        tvCardCreatedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_created), card.getCreatedBy(), card.getCreatedAt().humanReadable())));
+        tvCardLastModifiedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_modified), card.getLastModifiedBy(), card.getLastModifiedAt().humanReadable())));
+    }
+
+    private void toggleArchiveCard() {
+        btCardArchive.setEnabled(false);
+        btCardArchive.setTextColor(Color.GRAY);
+        boolean archive = !card.isDeleted();
+
+        currentCall = CardResource.getInstance().archive(archive, card.getId(), new Callback<Status<Card>>() {
+            @Override
+            public void onResult(Status<Card> status) {
+                Log.d("API", "onResult "+ status);
+
+                if (status != null) {
+                    card = status.getData();
+                    btCardArchive.setText(status.getData().isDeleted() ? getResources().getText(R.string.action_recover_card) : getResources().getText(R.string.action_archive_card));
+                    btCardArchive.setEnabled(true);
+                    btCardArchive.setTextColor(getResources().getColor(R.color.colorCardButton));
+
+                    Snackbar.make(recyclerView,
+                            (card.isDeleted() ? res.getString(R.string.success_archived_card) : res.getString(R.string.success_recovered_card)), Snackbar.LENGTH_LONG).show();
+                }
+
+            }
+
+            @Override
+            public void onError() {
+                Snackbar.make(recyclerView, res.getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (currentCall != null)
+            currentCall.cancel();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)

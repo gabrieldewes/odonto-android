@@ -32,18 +32,13 @@ import retrofit2.Call;
 public class ActionActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     private Card card;
-
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ActionAdapter actionAdapter;
-
     private View progressView;
     private View emptyView;
-
     private EndlessRecyclerOnScrollListener endlessScrollListener;
-
     private Call currentCall;
-
     private Resources res;
 
     @Override
@@ -55,15 +50,12 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
             finish();
 
         res = getResources();
-
         card = (Card) getIntent().getExtras().get("card");
 
         recyclerView       = (RecyclerView)       findViewById(R.id.recycler);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         progressView       =                      findViewById(R.id.progressView);
         emptyView          =                      findViewById(R.id.emptyView);
-
-        showProgress(true);
 
         swipeRefreshLayout.setOnRefreshListener(this);
 
@@ -73,32 +65,6 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-        CardResource.getInstance().getActions(card.getId(), 1, new Callback<List<Action>>() {
-            @Override
-            public void onResult(List<Action> actions) {
-                Log.d("API", "onResult "+ actions);
-                showProgress(false);
-                if (actions != null) {
-                    actionAdapter = new ActionAdapter(ActionActivity.this, card, actions);
-                    recyclerView.setAdapter(actionAdapter);
-
-                    if (actions.isEmpty()) {
-                        recyclerView.setVisibility(View.GONE);
-                        emptyView.setVisibility(View.VISIBLE);
-                    }
-                    else {
-                        recyclerView.setVisibility(View.VISIBLE);
-                        emptyView.setVisibility(View.GONE);
-                    }
-                }
-            }
-
-            @Override
-            public void onError() {
-                Snackbar.make(recyclerView, getResources().getText(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
-            }
-        });
 
         endlessScrollListener = new EndlessRecyclerOnScrollListener( (LinearLayoutManager) layoutManager) {
             @Override
@@ -122,12 +88,59 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
                 });
             }
         };
-
         recyclerView.setOnScrollListener(endlessScrollListener);
+
+        fetchActions();
+    }
+
+    private void fetchActions() {
+        showProgress(true);
+        if (swipeRefreshLayout.isRefreshing())
+            swipeRefreshLayout.setRefreshing(false);
+        currentCall = CardResource.getInstance().getActions(card.getId(), 1, new Callback<List<Action>>() {
+            @Override
+            public void onResult(List<Action> actions) {
+                Log.d("API", "onResult "+ actions);
+
+                showProgress(false);
+
+                if (actions != null) {
+                    if (actions.isEmpty()) {
+                        //recyclerView.setVisibility(View.GONE);
+                        emptyView.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        endlessScrollListener.reset();
+                        actionAdapter = new ActionAdapter(ActionActivity.this, card, actions);
+                        recyclerView.setAdapter(actionAdapter);
+                        //recyclerView.setVisibility(View.VISIBLE);
+                        emptyView.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onError() {
+                showProgress(false);
+                Snackbar.make(recyclerView, getResources().getText(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     public static Intent getIntent(Context context, Card card) {
         return new Intent(context, ActionActivity.class).putExtra("card", card);
+    }
+
+    @Override
+    public void onRefresh() {
+        fetchActions();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (currentCall != null)
+            currentCall.cancel();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
@@ -143,43 +156,19 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
                     progressView.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
+
+            recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
+            recyclerView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
         }
         else {
             progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-    }
-
-    @Override
-    public void onRefresh() {
-        CardResource.getInstance().getActions(card.getId(), 1, new Callback<List<Action>>() {
-            @Override
-            public void onResult(List<Action> actions) {
-                Log.d("API", "onResult "+ actions);
-                showProgress(false);
-                swipeRefreshLayout.setRefreshing(false);
-                if (actions != null) {
-                    endlessScrollListener.reset();
-                    actionAdapter = new ActionAdapter(ActionActivity.this, card, actions);
-                    recyclerView.setAdapter(actionAdapter);
-
-                    if (actions.isEmpty()) {
-                        recyclerView.setVisibility(View.GONE);
-                        emptyView.setVisibility(View.VISIBLE);
-                    }
-                    else {
-                        recyclerView.setVisibility(View.VISIBLE);
-                        emptyView.setVisibility(View.GONE);
-                    }
-                }
-            }
-
-            @Override
-            public void onError() {
-                showProgress(false);
-                swipeRefreshLayout.setRefreshing(false);
-                Snackbar.make(recyclerView, getResources().getText(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
-            }
-        });
-
     }
 }

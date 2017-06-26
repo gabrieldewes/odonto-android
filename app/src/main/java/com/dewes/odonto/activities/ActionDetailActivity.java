@@ -36,7 +36,6 @@ public class ActionDetailActivity extends AppCompatActivity {
     private TextView tvActionWhatafield;
     private TextView tvActionCreatedByAt;
     private TextView tvActionLastModifiedByAt;
-    private Button btSomeAction;
 
     private RecyclerView recyclerView;
     private View progressView;
@@ -63,18 +62,11 @@ public class ActionDetailActivity extends AppCompatActivity {
         this.tvActionWhatafield = (TextView) findViewById(R.id.tvActionWhatafield);
         this.tvActionCreatedByAt = (TextView) findViewById(R.id.tvActionCreatedByAt);
         this.tvActionLastModifiedByAt = (TextView) findViewById(R.id.tvActionLastModifiedByAt);
-        this.btSomeAction = (Button) findViewById(R.id.btSomeAction);
-
-        tvActionTitle.setText(String.format(res.getString(R.string.title_action), action.getId()));
-        tvActionWhatafield.setText(action.getWhatafield());
-        tvActionCreatedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_created), action.getCreatedBy(), action.getCreatedAt().humanReadable())));
-        tvActionLastModifiedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_modified), action.getLastModifiedBy(), action.getLastModifiedAt().humanReadable())));
+        Button btSomeAction = (Button) findViewById(R.id.btSomeAction);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         progressView = findViewById(R.id.progressBar);
         tvActionAttachment = (TextView) findViewById(R.id.tvActionAttachment);
-        tvActionAttachment.setVisibility(View.GONE);
-        showProgress(true);
 
         RecyclerView.LayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layout);
@@ -82,30 +74,6 @@ public class ActionDetailActivity extends AppCompatActivity {
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-        CardResource.getInstance().getActionAttachments(card.getId(), action.getId(), new Callback<List<Attachment>>() {
-            @Override
-            public void onResult(List<Attachment> attachments) {
-                Log.d("API", "onResult "+ attachments);
-                showProgress(false);
-                attachmentAdapter = new AttachmentAdapter(ActionDetailActivity.this, attachments);
-                recyclerView.setAdapter(attachmentAdapter);
-
-                if (attachments.isEmpty()) {
-                    recyclerView.setVisibility(View.GONE);
-                    tvActionAttachment.setVisibility(View.GONE);
-                }
-                else {
-                    recyclerView.setVisibility(View.VISIBLE);
-                    tvActionAttachment.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onError() {
-                Snackbar.make(recyclerView, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
-            }
-        });
 
         btSomeAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +83,8 @@ public class ActionDetailActivity extends AppCompatActivity {
             }
         });
 
+        populateFields();
+        fetchAttachments();
     }
 
     public static Intent getIntent(Context context, Card card, Action action) {
@@ -123,10 +93,50 @@ public class ActionDetailActivity extends AppCompatActivity {
                 .putExtra("card", card);
     }
 
+    private void fetchAttachments() {
+        showProgress(true);
+        CardResource.getInstance().getActionAttachments(card.getId(), action.getId(), new Callback<List<Attachment>>() {
+            @Override
+            public void onResult(List<Attachment> attachments) {
+                Log.d("API", "onResult "+ attachments);
+                showProgress(false);
+
+                if (attachments != null) {
+                    if (attachments.isEmpty()) {
+                        recyclerView.setVisibility(View.GONE);
+                        tvActionAttachment.setVisibility(View.GONE);
+                    }
+                    else {
+                        attachmentAdapter = new AttachmentAdapter(ActionDetailActivity.this, attachments);
+                        recyclerView.setAdapter(attachmentAdapter);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        tvActionAttachment.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onError() {
+                showProgress(false);
+                Snackbar.make(recyclerView, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void populateFields() {
+        tvActionTitle.setText(String.format(res.getString(R.string.title_action), action.getId()));
+        tvActionWhatafield.setText(action.getWhatafield());
+        tvActionCreatedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_created), action.getCreatedBy(), action.getCreatedAt().humanReadable())));
+        tvActionLastModifiedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_modified), action.getLastModifiedBy(), action.getLastModifiedAt().humanReadable())));
+    }
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            recyclerView.setVisibility(View.GONE);
+            tvActionAttachment.setVisibility(View.GONE);
 
             progressView.setVisibility(show ? View.VISIBLE : View.GONE);
             progressView.animate().setDuration(shortAnimTime).alpha(

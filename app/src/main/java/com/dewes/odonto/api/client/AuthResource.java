@@ -1,5 +1,7 @@
 package com.dewes.odonto.api.client;
 
+import android.util.Log;
+
 import com.dewes.odonto.domain.Status;
 import com.dewes.odonto.domain.Token;
 import com.dewes.odonto.domain.User;

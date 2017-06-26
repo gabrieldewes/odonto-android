@@ -35,18 +35,15 @@ import retrofit2.Call;
 
 public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private FrameLayout fragmentContainer = null;
-
+    private FrameLayout fragmentContainer;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private EndlessRecyclerOnScrollListener endlessScrollListener;
     private CardAdapter cardAdapter;
     private View progressView;
     private View emptyView;
-
     boolean archive = false;
     private Call currentCall;
-
     private Resources res;
 
     public static CardFragment getInstance(boolean archive) {
@@ -62,21 +59,14 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         super.onActivityCreated(savedInstanceState);
 
         final View view = getView();
-        res = getResources();
-
-        Bundle args = getArguments();
-        if (args != null) {
-            archive = args.getBoolean("archive", false);
-        }
 
         if (view != null) {
+            res = getResources();
+            Bundle args = getArguments();
 
-            recyclerView       = (RecyclerView)       view.findViewById(R.id.recycler);
-            swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
-            progressView       =                      view.findViewById(R.id.fragment_card_progress);
-            emptyView          =                      view.findViewById(R.id.empty_view);
-
-            showProgress(true);
+            if (args != null) {
+                archive = args.getBoolean("archive", false);
+            }
 
             swipeRefreshLayout.setOnRefreshListener(this);
 
@@ -87,37 +77,10 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             recyclerView.setDrawingCacheEnabled(true);
             recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-            currentCall = CardResource.getInstance().findAll(archive, 1, new Callback<List<Card>>() {
-                @Override
-                public void onResult(List<Card> cards) {
-                    showProgress(false);
-
-                    if (cards != null) {
-                        cardAdapter = new CardAdapter(view.getContext(), cards);
-                        recyclerView.setAdapter(cardAdapter);
-
-                        if (cards.isEmpty()) {
-                            recyclerView.setVisibility(View.GONE);
-                            emptyView.setVisibility(View.VISIBLE);
-                        }
-                        else {
-                            recyclerView.setVisibility(View.VISIBLE);
-                            emptyView.setVisibility(View.GONE);
-                        }
-                    }
-                }
-
-                @Override
-                public void onError() {
-                    showProgress(false);
-                    Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
-                }
-            });
-
             endlessScrollListener = new EndlessRecyclerOnScrollListener( (LinearLayoutManager) layoutManager) {
                 @Override
                 public void onLoadMore(int current_page) {
-                    Log.d("API", "Loading more "+ current_page);
+                    Log.d("API", "Loading page "+ current_page);
                     currentCall = CardResource.getInstance().findAll(archive, current_page, new Callback<List<Card>>() {
                         @Override
                         public void onResult(List<Card> cards) {
@@ -130,14 +93,14 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
                         @Override
                         public void onError() {
-                            showProgress(false);
                             Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
                         }
                     });
                 }
             };
-
             recyclerView.setOnScrollListener(endlessScrollListener);
+
+            fetchCards();
         }
     }
 
@@ -145,29 +108,39 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_card, container, false);
-        fragmentContainer = (FrameLayout) view.findViewById(R.id.fragmentCards);
+        fragmentContainer  = (FrameLayout)        view.findViewById(R.id.fragmentCards);
+        recyclerView       = (RecyclerView)       view.findViewById(R.id.recycler);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        progressView       =                      view.findViewById(R.id.fragment_card_progress);
+        emptyView          =                      view.findViewById(R.id.empty_view);
         return view;
     }
 
     @Override
     public void onRefresh() {
+        fetchCards();
+    }
+
+    private void fetchCards() {
+        showProgress(true);
+        if (swipeRefreshLayout.isRefreshing())
+            swipeRefreshLayout.setRefreshing(false);
         currentCall = CardResource.getInstance().findAll(archive, 1, new Callback<List<Card>>() {
             @Override
             public void onResult(List<Card> cards) {
                 showProgress(false);
-                swipeRefreshLayout.setRefreshing(false);
 
                 if (cards != null) {
-                    endlessScrollListener.reset();
-                    cardAdapter = new CardAdapter(getContext(), cards);
-                    recyclerView.setAdapter(cardAdapter);
 
                     if (cards.isEmpty()) {
-                        recyclerView.setVisibility(View.GONE);
+                        //recyclerView.setVisibility(View.GONE);
                         emptyView.setVisibility(View.VISIBLE);
                     }
                     else {
-                        recyclerView.setVisibility(View.VISIBLE);
+                        endlessScrollListener.reset();
+                        cardAdapter = new CardAdapter(getContext(), cards);
+                        recyclerView.setAdapter(cardAdapter);
+                        //recyclerView.setVisibility(View.VISIBLE);
                         emptyView.setVisibility(View.GONE);
                     }
                 }
@@ -175,8 +148,8 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
             @Override
             public void onError() {
+                showProgress(false);
                 Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
-                swipeRefreshLayout.setRefreshing(false);
             }
         });
     }
@@ -195,7 +168,6 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 }
             });
 
-            /*
             recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
             recyclerView.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
@@ -204,11 +176,10 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
             });
-            */
         }
         else {
             progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            //recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
+            recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 

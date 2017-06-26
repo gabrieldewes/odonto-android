@@ -46,6 +46,12 @@
         <activity
             android:name=".activities.CardCreateActivity"
             android:label="@string/title_activity_create_card" />
+        <activity
+            android:name=".activities.ActionDetailActivity"
+            android:label="@string/title_activity_action_details"/>
+        <activity
+            android:name=".activities.ProfileActivity"
+            android:label="@string/title_profile"></activity>
 
         <service
             android:name=".authenticator.AppAuthenticatorService"
@@ -58,9 +64,6 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-
-        <activity android:name=".activities.ActionDetailActivity" />
-        <activity android:name=".activities.ProfileActivity"></activity>
     </application>
 
 </manifest>

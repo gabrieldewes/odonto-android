@@ -20,6 +20,9 @@ import com.dewes.odonto.R;
 import com.dewes.odonto.api.client.AccountResource;
 import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.domain.Status;
+
+import java.util.concurrent.TimeUnit;
+
 import retrofit2.Call;
 
 /**
@@ -29,9 +32,6 @@ import retrofit2.Call;
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private FrameLayout fragmentContainer;
-
-    private TextView tvTitle;
-    private TextView tvSubtitle;
 
     private View progressView;
     private View homeContent;
@@ -46,38 +46,11 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         if (view != null) {
 
-            tvTitle = (TextView) view.findViewById(R.id.tvTitle);
-            tvSubtitle = (TextView) view.findViewById(R.id.tvSubtitle);
-
             progressView = view.findViewById(R.id.progressBar);
             homeContent = view.findViewById(R.id.homeContent);
             swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
 
             swipeRefreshLayout.setOnRefreshListener(this);
-
-            showProgress(true);
-
-            currentCall = AccountResource.getInstance().greetings(new Callback<Status>() {
-                @Override
-                public void onResult(Status status) {
-                    Log.d("API", "onResult "+ status);
-                    showProgress(false);
-                    if (status != null) {
-                        tvTitle.setText(status.getStatus());
-                        tvSubtitle.setText(status.getMessage());
-                    }
-                    else {
-                        Snackbar.make(fragmentContainer, getResources().getString(R.string.error_api_response), Snackbar.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onError() {
-                    showProgress(false);
-                    Snackbar.make(fragmentContainer, getResources().getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
-                }
-            });
-
         }
     }
 
@@ -139,24 +112,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
-        showProgress(true);
-
-        currentCall = AccountResource.getInstance().greetings(new Callback<Status>() {
-            @Override
-            public void onResult(Status status) {
-                swipeRefreshLayout.setRefreshing(false);
-                showProgress(false);
-                tvTitle.setText(status.getStatus());
-                tvSubtitle.setText(status.getMessage());
-            }
-
-            @Override
-            public void onError() {
-                swipeRefreshLayout.setRefreshing(false);
-                showProgress(false);
-                Snackbar.make(fragmentContainer, getResources().getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
-            }
-        });
-
+        showProgress(false);
+        swipeRefreshLayout.setRefreshing(false);
     }
 }

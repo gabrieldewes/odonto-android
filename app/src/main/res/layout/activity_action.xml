@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.dewes.odonto.activities.ActionActivity">
+    tools:context="com.dewes.odonto.activities.ActionActivity"
+    android:background="#eee">
 
     <ProgressBar
         android:id="@+id/progressView"
