@@ -52,6 +52,7 @@ public class Attachment extends AbstractEntity {
                 ", isImage=" + isImage +
                 ", imageWidth=" + imageWidth +
                 ", imageHeight=" + imageHeight +
+                ", abstractEntity='" + super.toString() + '\'' +
                 '}';
     }
 

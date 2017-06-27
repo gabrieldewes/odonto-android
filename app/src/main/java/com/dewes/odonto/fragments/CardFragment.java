@@ -128,6 +128,7 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         currentCall = CardResource.getInstance().findAll(archive, 1, new Callback<List<Card>>() {
             @Override
             public void onResult(List<Card> cards) {
+                Log.d("API", "onResult "+ cards);
                 showProgress(false);
 
                 if (cards != null) {

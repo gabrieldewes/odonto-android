@@ -47,6 +47,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
         holder.setCardItem(card);
         holder.tvCardTitle.setText(String.format(this.context.getResources().getString(R.string.title_card), card.getId()));
         holder.tvCardWhatafield.setText(card.getWhatafield());
+        holder.tvCardTimeAgo.setText(card.getTimeAgo());
         holder.btCardArchive.setText(card.isDeleted() ? this.context.getResources().getText(R.string.action_recover_card) : this.context.getResources().getText(R.string.action_archive_card));
     }
 
@@ -69,6 +70,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
         private Card cardItem;
         private TextView tvCardTitle;
         private TextView tvCardWhatafield;
+        private TextView tvCardTimeAgo;
         private Button btCardView;
         private Button btCardActions;
         private Button btCardArchive;
@@ -78,6 +80,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
             this.context = itemView.getContext();
             this.tvCardTitle = (TextView) itemView.findViewById(R.id.tvCardTitle);
             this.tvCardWhatafield = (TextView) itemView.findViewById(R.id.tvCardWhatafield);
+            this.tvCardTimeAgo = (TextView) itemView.findViewById(R.id.tvCardTimeAgo);
             this.btCardView = (Button) itemView.findViewById(R.id.btCardView);
             this.btCardActions = (Button) itemView.findViewById(R.id.btCardActions);
             this.btCardArchive = (Button) itemView.findViewById(R.id.btCardArchive);

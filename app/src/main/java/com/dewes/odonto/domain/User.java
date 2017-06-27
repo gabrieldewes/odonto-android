@@ -54,6 +54,7 @@ public class User extends AbstractEntity implements Serializable {
                 ", email='" + email + '\'' +
                 ", avatarUrl='" + avatarUrl + '\'' +
                 ", password='" + password + '\'' +
+                ", abstractEntity='" + super.toString() + '\'' +
                 '}';
     }
 

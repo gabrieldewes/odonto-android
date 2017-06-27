@@ -17,11 +17,17 @@ public class Action extends AbstractEntity {
     @SerializedName("whatafield")
     private String whatafield;
 
+    @Expose
+    @SerializedName("timeAgo")
+    private String timeAgo;
+
     @Override
     public String toString() {
         return "Action{" +
                 "actionType='" + actionType + '\'' +
                 ", whatafield='" + whatafield + '\'' +
+                ", timeAgo='" + timeAgo + '\'' +
+                ", abstractEntity='" + super.toString() + '\'' +
                 '}';
     }
 
@@ -39,5 +45,13 @@ public class Action extends AbstractEntity {
 
     public void setWhatafield(String whatafield) {
         this.whatafield = whatafield;
+    }
+
+    public String getTimeAgo() {
+        return timeAgo;
+    }
+
+    public void setTimeAgo(String timeAgo) {
+        this.timeAgo = timeAgo;
     }
 }

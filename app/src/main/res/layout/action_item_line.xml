@@ -29,6 +29,17 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:text="Subtitle here"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvActionTimeAgo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="Time ago"
             android:textSize="16sp" />
 
         <LinearLayout

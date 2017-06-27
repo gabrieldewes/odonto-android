@@ -132,8 +132,8 @@ public class CardDetailActivity extends AppCompatActivity {
     private void populateFields() {
         tvCardTitle.setText(String.format(res.getString(R.string.title_card), card.getId()));
         tvCardWhatafield.setText(card.getWhatafield());
-        tvCardCreatedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_created), card.getCreatedBy(), card.getCreatedAt().humanReadable())));
-        tvCardLastModifiedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_modified), card.getLastModifiedBy(), card.getLastModifiedAt().humanReadable())));
+        tvCardCreatedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_created), card.getCreatedBy(), card.getCreatedAtFormatted())));
+        tvCardLastModifiedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_modified), card.getLastModifiedBy(), card.getLastModifiedAtFormatted())));
     }
 
     private void toggleArchiveCard() {

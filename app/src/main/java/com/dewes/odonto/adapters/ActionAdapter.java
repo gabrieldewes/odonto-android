@@ -49,6 +49,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         holder.setActionItem(action);
         holder.tvActionType.setText(String.format(res.getString(R.string.title_action), action.getId()));
         holder.tvActionWhatafield.setText(action.getWhatafield());
+        holder.tvActionTimeAgo.setText(action.getTimeAgo());
     }
 
     @Override
@@ -70,6 +71,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         private Action actionItem;
         private TextView tvActionType;
         private TextView tvActionWhatafield;
+        private TextView tvActionTimeAgo;
         private Button btActionView;
 
         public ActionViewHolder(final View itemView) {
@@ -77,6 +79,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             this.context = itemView.getContext();
             this.tvActionType = (TextView) itemView.findViewById(R.id.tvActionType);
             this.tvActionWhatafield = (TextView) itemView.findViewById(R.id.tvActionWhatafield);
+            this.tvActionTimeAgo = (TextView) itemView.findViewById(R.id.tvActionTimeAgo);
             this.btActionView = (Button) itemView.findViewById(R.id.btActionView);
 
             btActionView.setOnClickListener(new View.OnClickListener() {

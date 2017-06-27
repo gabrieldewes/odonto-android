@@ -126,8 +126,8 @@ public class ActionDetailActivity extends AppCompatActivity {
     private void populateFields() {
         tvActionTitle.setText(String.format(res.getString(R.string.title_action), action.getId()));
         tvActionWhatafield.setText(action.getWhatafield());
-        tvActionCreatedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_created), action.getCreatedBy(), action.getCreatedAt().humanReadable())));
-        tvActionLastModifiedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_modified), action.getLastModifiedBy(), action.getLastModifiedAt().humanReadable())));
+        tvActionCreatedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_created), action.getCreatedBy(), action.getCreatedAtFormatted())));
+        tvActionLastModifiedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_modified), action.getLastModifiedBy(), action.getLastModifiedAtFormatted())));
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)

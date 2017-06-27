@@ -16,13 +16,16 @@ public class Card extends AbstractEntity implements Serializable {
     @SerializedName("whatafield")
     private String whatafield;
 
-    private User user;
+    @Expose
+    @SerializedName("timeAgo")
+    private String timeAgo;
 
     @Override
     public String toString() {
         return "Card{" +
                 "whatafield='" + whatafield + '\'' +
-                ", user=" + user +
+                ", timeAgo='" + timeAgo + '\'' +
+                ", abstractEntity='" + super.toString() + '\'' +
                 '}';
     }
 
@@ -34,12 +37,11 @@ public class Card extends AbstractEntity implements Serializable {
         this.whatafield = whatafield;
     }
 
-    public User getUser() {
-        return user;
+    public String getTimeAgo() {
+        return timeAgo;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setTimeAgo(String timeAgo) {
+        this.timeAgo = timeAgo;
     }
-
 }
