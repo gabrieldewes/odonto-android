@@ -20,6 +20,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".activities.SplashActivity"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".authenticator.AuthenticatorActivity"
             android:label="@string/title_activity_login" />
         <activity
@@ -32,15 +41,6 @@
             android:name=".activities.ActionActivity"
             android:label="@string/title_activity_action" />
         <activity
-            android:name=".activities.SplashActivity"
-            android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".activities.MainActivity"
             android:label="@string/title_activity_main" />
         <activity
@@ -48,10 +48,10 @@
             android:label="@string/title_activity_create_card" />
         <activity
             android:name=".activities.ActionDetailActivity"
-            android:label="@string/title_activity_action_details"/>
+            android:label="@string/title_activity_action_details" />
         <activity
             android:name=".activities.ProfileActivity"
-            android:label="@string/title_profile"></activity>
+            android:label="@string/title_profile" />
 
         <service
             android:name=".authenticator.AppAuthenticatorService"
@@ -64,6 +64,7 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
     </application>
 
 </manifest>

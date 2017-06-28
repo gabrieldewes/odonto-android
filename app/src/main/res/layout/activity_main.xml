@@ -24,6 +24,14 @@
             android:layout_margin="@dimen/fab_margin"
             app:srcCompat="@drawable/ic_add_white_24dp" />
 
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/placeSnackbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom">
+
+        </android.support.design.widget.CoordinatorLayout>
+
     </FrameLayout>
 
     <android.support.design.widget.BottomNavigationView

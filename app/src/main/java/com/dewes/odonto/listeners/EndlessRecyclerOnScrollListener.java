@@ -1,5 +1,8 @@
 package com.dewes.odonto.listeners;
 
+import android.app.Activity;
+import android.content.Context;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -32,7 +35,7 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
         visibleItemCount = recyclerView.getChildCount();
         totalItemCount = mLinearLayoutManager.getItemCount();
         //lastVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
-        //lastVisibleItem = mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+        //firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
         lastVisibleItem = mLinearLayoutManager.findLastVisibleItemPosition();
 
         //Log.d("API", "visibleItemCount "+ visibleItemCount +" totalItemCount "+ totalItemCount +" lastVisibleItem "+ lastVisibleItem);

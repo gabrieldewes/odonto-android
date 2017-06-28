@@ -105,7 +105,8 @@ public class ProfileFragment extends Fragment {
                     tvUserProfileBio.setText(principal.getBio());
                     tvUserProfileEmail.setText(principal.getEmail());
                     tvUserProfileUsername.setText(principal.getUsername());
-                    tvUserProfileRoles.setText(principal.getRoles().get(0).replaceAll("ROLE_", ""));
+                    //tvUserProfileRoles.setText(principal.getRoles().get(0).replaceAll("ROLE_", ""));
+                    tvUserProfileRoles.setText(com.dewes.odonto.domain.Utils.rolesToHuman(principal.getRoles()));
                     new ImageHelper(ivUserProfilePhoto).execute(principal.getAvatarUrl());
                     new ImageHelper(ivHeaderCover, true).execute(principal.getAvatarUrl());
                 }
@@ -114,7 +115,8 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onError() {
                 showProgress(false);
-                Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+                showMessage(res.getString(R.string.error_no_connection));
+                //Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -152,7 +154,8 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onError() {
                 showProgress(false);
-                Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+                showMessage(res.getString(R.string.error_no_connection));
+                //Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -176,6 +179,11 @@ public class ProfileFragment extends Fragment {
         super.onDetach();
         if (currentCall != null)
             currentCall.cancel();
+    }
+
+    private void showMessage(String message) {
+        Snackbar.make(getActivity().findViewById(R.id.placeSnackbar), message, Snackbar.LENGTH_LONG)
+                .show();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)

@@ -21,12 +21,17 @@ public class Action extends AbstractEntity {
     @SerializedName("timeAgo")
     private String timeAgo;
 
+    @Expose
+    @SerializedName("thumbUrl")
+    private String thumbUrl;
+
     @Override
     public String toString() {
         return "Action{" +
                 "actionType='" + actionType + '\'' +
                 ", whatafield='" + whatafield + '\'' +
                 ", timeAgo='" + timeAgo + '\'' +
+                ", thumbUrl='" + thumbUrl + '\'' +
                 ", abstractEntity='" + super.toString() + '\'' +
                 '}';
     }
@@ -53,5 +58,13 @@ public class Action extends AbstractEntity {
 
     public void setTimeAgo(String timeAgo) {
         this.timeAgo = timeAgo;
+    }
+
+    public String getThumbUrl() {
+        return thumbUrl;
+    }
+
+    public void setThumbUrl(String thumbUrl) {
+        this.thumbUrl = thumbUrl;
     }
 }

@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import com.dewes.odonto.R;
 import com.dewes.odonto.fragments.CardFragment;
 import com.dewes.odonto.fragments.HomeFragment;
@@ -63,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setVisibility(View.GONE);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content, new HomeFragment());
+        transaction.replace(R.id.content, currentFragment = new HomeFragment());
         transaction.commit();
     }
 
@@ -110,9 +110,11 @@ public class MainActivity extends AppCompatActivity {
                     // set once again checked value, so view will be updated
                     item.setChecked(item.getItemData().isChecked());
                 }
-            } catch (NoSuchFieldException e) {
+            }
+            catch (NoSuchFieldException e) {
                 Log.e("ERROR NO SUCH FIELD", "Unable to get shift mode field");
-            } catch (IllegalAccessException e) {
+            }
+            catch (IllegalAccessException e) {
                 Log.e("ERROR ILLEGAL ALG", "Unable to change value of shift mode");
             }
         }

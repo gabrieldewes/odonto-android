@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,6 +53,12 @@ public class ActionDetailActivity extends AppCompatActivity {
 
         if (getIntent().getExtras() == null)
             finish();
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
         action = (Action) getIntent().getExtras().get("action");
         card = (Card) getIntent().getExtras().get("card");
@@ -128,6 +135,12 @@ public class ActionDetailActivity extends AppCompatActivity {
         tvActionWhatafield.setText(action.getWhatafield());
         tvActionCreatedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_created), action.getCreatedBy(), action.getCreatedAtFormatted())));
         tvActionLastModifiedByAt.setText(Html.fromHtml(String.format(res.getString(R.string.title_audit_data_modified), action.getLastModifiedBy(), action.getLastModifiedAtFormatted())));
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)

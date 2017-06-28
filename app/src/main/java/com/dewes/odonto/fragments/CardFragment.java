@@ -10,6 +10,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,8 +20,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.dewes.odonto.R;
+import com.dewes.odonto.activities.MainActivity;
 import com.dewes.odonto.adapters.CardAdapter;
 import com.dewes.odonto.api.client.Callback;
 import com.dewes.odonto.api.client.CardResource;
@@ -68,6 +73,8 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 archive = args.getBoolean("archive", false);
             }
 
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
             swipeRefreshLayout.setOnRefreshListener(this);
 
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(fragmentContainer.getContext(), LinearLayoutManager.VERTICAL, false);
@@ -77,25 +84,10 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             recyclerView.setDrawingCacheEnabled(true);
             recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-            endlessScrollListener = new EndlessRecyclerOnScrollListener( (LinearLayoutManager) layoutManager) {
+            endlessScrollListener = new EndlessRecyclerOnScrollListener((LinearLayoutManager) layoutManager) {
                 @Override
                 public void onLoadMore(int current_page) {
-                    Log.d("API", "Loading page "+ current_page);
-                    currentCall = CardResource.getInstance().findAll(archive, current_page, new Callback<List<Card>>() {
-                        @Override
-                        public void onResult(List<Card> cards) {
-                            Log.d("API", "onResult "+ cards);
-
-                            if (cards != null && !cards.isEmpty()) {
-                                cardAdapter.reloadList(cards);
-                            }
-                        }
-
-                        @Override
-                        public void onError() {
-                            Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
-                        }
-                    });
+                    appendCards(current_page);
                 }
             };
             recyclerView.setOnScrollListener(endlessScrollListener);
@@ -150,9 +142,50 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             @Override
             public void onError() {
                 showProgress(false);
-                Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+                showMessage(res.getString(R.string.error_no_connection));
+                //Snackbar.make(getActivity().findViewById(R.id.placeSnackbar), res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+                //Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void appendCards(int page) {
+        Log.d("API", "Loading page "+ page);
+        currentCall = CardResource.getInstance().findAll(archive, page, new Callback<List<Card>>() {
+            @Override
+            public void onResult(List<Card> cards) {
+                Log.d("API", "onResult "+ cards);
+
+                if (cards != null && !cards.isEmpty()) {
+                    cardAdapter.reloadList(cards);
+                }
+            }
+
+            @Override
+            public void onError() {
+                showMessage(res.getString(R.string.error_no_connection));
+                //Snackbar.make(fragmentContainer, res.getString(R.string.error_no_connection), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (currentCall != null)
+            currentCall.cancel();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (currentCall != null)
+            currentCall.cancel();
+    }
+
+    private void showMessage(String message) {
+        Snackbar.make(getActivity().findViewById(R.id.placeSnackbar), message, Snackbar.LENGTH_LONG)
+                .show();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
@@ -184,17 +217,4 @@ public class CardFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (currentCall != null)
-            currentCall.cancel();
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        if (currentCall != null)
-            currentCall.cancel();
-    }
 }

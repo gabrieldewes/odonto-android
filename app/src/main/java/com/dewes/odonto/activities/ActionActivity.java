@@ -11,6 +11,7 @@ import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -49,6 +50,12 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
         if (getIntent().getExtras() == null)
             finish();
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
+
         res = getResources();
         card = (Card) getIntent().getExtras().get("card");
 
@@ -66,7 +73,7 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-        endlessScrollListener = new EndlessRecyclerOnScrollListener( (LinearLayoutManager) layoutManager) {
+        endlessScrollListener = new EndlessRecyclerOnScrollListener((LinearLayoutManager) layoutManager) {
             @Override
             public void onLoadMore(int current_page) {
                 Log.d("API", "Loading more "+ current_page);
@@ -134,6 +141,12 @@ public class ActionActivity extends AppCompatActivity implements SwipeRefreshLay
     @Override
     public void onRefresh() {
         fetchActions();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override

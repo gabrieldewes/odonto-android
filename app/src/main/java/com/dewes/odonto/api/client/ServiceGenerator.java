@@ -22,8 +22,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceGenerator {
 
-    //private static String API_URL = "http://104.131.172.28/api/";
-    private static String API_URL = "http://10.0.0.10/odonto/api/";
+    private static String API_URL = "http://104.131.172.28/api/";
+    //private static String API_URL = "http://10.0.0.10/odonto/api/";
     //private static final String API_URL = "http://192.168.0.103/odonto/api/";
 
     private static final String CLIENT_ID = "android";

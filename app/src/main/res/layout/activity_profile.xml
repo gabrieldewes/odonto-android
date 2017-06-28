@@ -100,6 +100,7 @@
                     android:padding="20dp"
                     android:text="..." />
 
+                <!--
                 <TextView
                     android:id="@+id/user_profile_username"
                     android:layout_width="fill_parent"
@@ -111,6 +112,7 @@
                     android:clickable="true"
                     android:padding="20dp"
                     android:text="..." />
+                -->
 
                 <TextView
                     android:id="@+id/user_profile_roles"

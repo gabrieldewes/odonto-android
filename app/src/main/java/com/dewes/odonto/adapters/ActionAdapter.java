@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import com.dewes.odonto.R;
 import com.dewes.odonto.activities.ActionDetailActivity;
 import com.dewes.odonto.domain.Action;
 import com.dewes.odonto.domain.Card;
+import com.dewes.odonto.util.ImageHelper;
 
 import java.util.List;
 
@@ -50,6 +52,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         holder.tvActionType.setText(String.format(res.getString(R.string.title_action), action.getId()));
         holder.tvActionWhatafield.setText(action.getWhatafield());
         holder.tvActionTimeAgo.setText(action.getTimeAgo());
+        new ImageHelper(holder.ivActionThumb).execute(action.getThumbUrl());
     }
 
     @Override
@@ -69,6 +72,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         private Context context;
 
         private Action actionItem;
+        private ImageView ivActionThumb;
         private TextView tvActionType;
         private TextView tvActionWhatafield;
         private TextView tvActionTimeAgo;
@@ -77,6 +81,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         public ActionViewHolder(final View itemView) {
             super(itemView);
             this.context = itemView.getContext();
+            this.ivActionThumb = (ImageView) itemView.findViewById(R.id.ivActionThumb);
             this.tvActionType = (TextView) itemView.findViewById(R.id.tvActionType);
             this.tvActionWhatafield = (TextView) itemView.findViewById(R.id.tvActionWhatafield);
             this.tvActionTimeAgo = (TextView) itemView.findViewById(R.id.tvActionTimeAgo);

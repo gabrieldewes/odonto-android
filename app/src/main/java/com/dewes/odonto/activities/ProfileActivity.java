@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,7 +36,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvUserProfileName;
     private TextView tvUserProfileBio;
     private TextView tvUserProfileEmail;
-    private TextView tvUserProfileUsername;
+    //private TextView tvUserProfileUsername;
     private TextView tvUserProfileRoles;
 
     private Call currentCall;
@@ -49,6 +50,12 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
+
         res = getResources();
 
         login = getIntent().getStringExtra("login");
@@ -58,7 +65,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvUserProfileName     = (TextView)  findViewById(R.id.user_profile_name);
         tvUserProfileBio      = (TextView)  findViewById(R.id.user_profile_short_bio);
         tvUserProfileEmail    = (TextView)  findViewById(R.id.user_profile_email);
-        tvUserProfileUsername = (TextView)  findViewById(R.id.user_profile_username);
+        //tvUserProfileUsername = (TextView)  findViewById(R.id.user_profile_username);
         tvUserProfileRoles    = (TextView)  findViewById(R.id.user_profile_roles);
 
         contentProfile = findViewById(R.id.contentProfile);
@@ -67,13 +74,6 @@ public class ProfileActivity extends AppCompatActivity {
         showProgress(true);
 
         loadProfile(login);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (currentCall != null)
-            currentCall.cancel();
     }
 
     private void loadProfile(String login) {
@@ -87,8 +87,9 @@ public class ProfileActivity extends AppCompatActivity {
                     tvUserProfileName.setText(fullName);
                     tvUserProfileBio.setText(principal.getBio());
                     tvUserProfileEmail.setText(principal.getEmail());
-                    tvUserProfileUsername.setText(principal.getUsername());
-                    tvUserProfileRoles.setText(principal.getRoles().get(0).replaceAll("ROLE_", ""));
+                    //tvUserProfileUsername.setText(principal.getUsername());
+                    //tvUserProfileRoles.setText(principal.getRoles().get(0).replaceAll("ROLE_", ""));
+                    tvUserProfileRoles.setText(com.dewes.odonto.domain.Utils.rolesToHuman(principal.getRoles()));
                     new ImageHelper(ivUserProfilePhoto).execute(principal.getAvatarUrl());
                     new ImageHelper(ivHeaderCover, true).execute(principal.getAvatarUrl());
                 }
@@ -105,6 +106,19 @@ public class ProfileActivity extends AppCompatActivity {
     public static Intent getIntent(Context context, String login) {
         return new Intent(context, ProfileActivity.class)
                 .putExtra("login", login);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (currentCall != null)
+            currentCall.cancel();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)

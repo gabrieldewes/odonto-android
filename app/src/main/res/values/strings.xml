@@ -63,5 +63,6 @@
     <string name="success_recovered_card">Cartão desarquivado</string>
 
     <string name="empty_view">Nada para mostrar</string>
+    <string name="title_activity_card_detail2">CardDetailActivity2</string>
 
 </resources>

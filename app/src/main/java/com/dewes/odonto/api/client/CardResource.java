@@ -4,6 +4,8 @@ import com.dewes.odonto.domain.Action;
 import com.dewes.odonto.domain.Attachment;
 import com.dewes.odonto.domain.Card;
 import com.dewes.odonto.domain.Status;
+
+import java.io.IOException;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -63,6 +65,23 @@ public class CardResource {
             }
         });
         return call;
+    }
+
+    public Status<Card> callForArchive(boolean archive, Long cardId) {
+        Call<Status<Card>> call = this.cardApi.archive(archive, cardId);
+        try {
+            Response<Status<Card>> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+            else {
+                Utils.parseErrorBody(response.errorBody());
+            }
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     public Call findAll(boolean archive, int page, final Callback<List<Card>> callback) {
